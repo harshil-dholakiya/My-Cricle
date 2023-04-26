@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>{{title}}</title>
+  <style>
+    @import url('https://rsms.me/inter/inter.css');
+
+    :root {
+      --tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+    }
+
+    body {
+      font-feature-settings: "cv03", "cv04", "cv11";
+    }
+  </style>
+</head>
+
+<body>
+  <script src="/javascripts/index-js/demo-theme.min.js?1674944402"></script>
+  <div class="page container-fluid">
+    <div class="page-wrapper">
+      <div class="page-header d-print-none">
+        <div class="container-xl">
+          <div class="row g-2 align-items-center">
+            <div class="col">
+              <div class="page-pretitle">
+                {{userDetails.firstName}}
+              </div>
+              <h2 class="page-title">
+                {{userDetails.lastName}}
+              </h2>
+            </div>
+            {{#if userDetails}}
+            <div class="col-auto ms-auto d-print-none d-flex">
+
+              <select class="form-select sort" aria-label="Default select example">
+                <option selected value="">Sort By</option>
+                <option value="title">
+                  Title
+                </option>
+                <option value="createdOn">
+                  Date & Time
+                </option>
+                <input type="hidden" value="" class="sortType">
+              </select>
+
+              <select class="form-select filter" aria-label="Default select example">
+                <option selected value="">Filter</option>
+                <option value="mine">
+                  Mine
+                </option>
+                <option value="others">
+                  Others
+                </option>
+                <option value="all">
+                  All
+                </option>
+                <input type="hidden" value="" class="type">
+              </select>
+
+            </div>
+
+            <div class="btn-list">
+              <span class="d-none d-sm-inline">
+                <a href="/users/userList" class="btn sort" data-sort="title">
+                  All Users
+                </a>
+              </span>
+
+              <span class="d-none d-sm-inline">
+                <a href="javascript:void(0)" class="btn savedPost" data-sort="title">
+                  Saved post
+                </a>
+              </span>
+
+              <a href="" class="btn btn-primary d-none d-sm-inline-block" data-bs-toggle="modal"
+                data-bs-target="#modal-report">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                  stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M12 5l0 14" />
+                  <path d="M5 12l14 0" />
+                </svg>
+                Create new Post
+              </a>
+              <a href="#" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal"
+                data-bs-target="#modal-report" aria-label="Create new report">
+                <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                  stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M12 5l0 14" />
+                  <path d="M5 12l14 0" />
+                </svg>
+              </a>
+            </div>
+          </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+    <div class="col-12 mt-3 bodyDiv">
+      {{>posts}}
+    </div>
+  </div>
+  </div>
+  </div>
+  </div>
+
+  <footer class="footer footer-transparent d-print-none">
+    <div class="container-xl">
+      <div class="row text-center align-items-center flex-row-reverse">
+        <div class="col-lg-auto ms-lg-auto">
+          <ul class="list-inline list-inline-dots mb-0">
+            <li class="list-inline-item"><a href="./docs/" class="link-secondary">Documentation</a></li>
+            <li class="list-inline-item"><a href="./license.html" class="link-secondary">License</a></li>
+            <li class="list-inline-item"><a href="https://github.com/tabler/tabler" target="_blank"
+                class="link-secondary" rel="noopener">Source code</a></li>
+            <li class="list-inline-item">
+              <a href="https://github.com/sponsors/codecalm" target="_blank" class="link-secondary" rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon text-pink icon-filled icon-inline" width="24"
+                  height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
+                </svg>
+                Sponsor
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+          <ul class="list-inline list-inline-dots mb-0">
+            <li class="list-inline-item">
+              Copyright &copy; 2023
+              <a href="." class="link-secondary">Tabler</a>.
+              All rights reserved.
+            </li>
+            <li class="list-inline-item">
+              <a href="./changelog.html" class="link-secondary" rel="noopener">
+                v1.0.0-beta17
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+  </div>
+  </div>
+
+  <div class="modal modal-blur fade" id="modal-report" tabindex="-1" role="dialog" aria-hidden="true">
+    <form action="/posts/add-post" method="post" id="addPostForm" enctype="multipart/form-data">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">New post</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" name="title" id="postName" placeholder="Your Post name">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <input type="text" class="form-control" name="description" id="description"
+                placeholder="Your Post Description">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">File Upload</label>
+              <input type="file" class="form-control" name="postImage" id="postImage" placeholder="Your Post Photo">
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+              Cancel
+            </a>
+            <button class="btn btn-primary ms-auto" type="submit" id="postSaveBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M12 5l0 14" />
+                <path d="M5 12l14 0" />
+              </svg>
+              Create new Post
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  {{!-- Edit Post Modal --}}
+  <div class="modal modal-blur fade" id="modal-editPost" tabindex="-1" role="dialog" aria-hidden="true">
+    <form id="editPostForm" enctype="multipart/form-data">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit post</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Title</label>
+              <input type="text" class="form-control" name="editTitle" id="editTitle" placeholder="Your Post name">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <input type="text" class="form-control" name="editDescription" id="editDescription"
+                placeholder="Your Post Description">
+            </div>
+
+            <div class="row align-items-center">
+              <div class="col-auto">
+                <img class="avatar avatar-xl postImage" src=""></img>
+              </div>
+              <div class="col-auto">
+                Change avatar
+                <input type="file" id="fileUpload" name="file">
+              </div>
+            </div>
+
+            <input type="hidden" class="form-control" name="editPostId" id="editPostId"
+              placeholder="Your Post Description">
+
+          </div>
+          <div class="modal-footer">
+            <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+              Cancel
+            </a>
+            <button class="btn btn-primary ms-auto" type="submit" id="postEditBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M12 5l0 14" />
+                <path d="M5 12l14 0" />
+              </svg>
+              Edit Post
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+
+</html>
