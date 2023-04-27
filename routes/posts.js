@@ -6,7 +6,7 @@ const path = require('path')
 const savedPostModel = require('../models/save-post');
 const { default: mongoose } = require('mongoose');
 
-
+let maxSize = 2000000;
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './public/images/posts');
@@ -14,7 +14,12 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
         cb(null, req.user._id + '-' + Date.now()
             + path.extname(file.originalname))
-    }
+    },
+    onFileUploadStart: function(file, req, res){
+        if(req.file.length > maxSize) {
+          return false;
+        }
+      }
 });
 
 //Checking File Ext
@@ -34,8 +39,10 @@ const checkFileType = function (file, cb) {
     }
 };
 
+// 2000000
 const upload = multer({
     storage: storage,
+    limits: { fileSize: maxSize },
     fileFilter: (req, file, cb) => {
         checkFileType(file, cb);
     },

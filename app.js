@@ -17,6 +17,13 @@ const userModel = require('./models/users');
 const moment = require('moment')
 const handlebars = require('handlebars-helpers')()
 
+const savedPostModel = require('./models/save-post');
+const postModel = require('./models/posts');
+const { log } = require('handlebars/runtime');
+const CronJob = require('cron').CronJob;
+const statisticsModel = require('./models/statistics')
+
+
 try {
   mongoose.connect(process.env.connectionString)
   console.log("Connected with mongoDb");
@@ -188,5 +195,27 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+const job = new CronJob(
+  '*/15 * * * *',
+  async function () {
+    let totalPost = await postModel.countDocuments({
+      createdOn: {
+        $gte: moment().subtract(1, "minutes"),
+        $lte: moment(),
+      },
+    })
+    let totalSavedPost = await savedPostModel.countDocuments({
+      createdOn: {
+        $gte: moment().subtract(1, "minutes"),
+        $lte: moment(),
+      },
+    })
+    await statisticsModel.create({ totalCreatedPost: totalPost, totalSavedPost: totalSavedPost })
+  },
+  null,
+  true,
+);
+
 
 module.exports = app;

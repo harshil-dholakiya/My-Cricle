@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const userModel = require('../models/users')
+const statisticsModel = require('../models/statistics')
+
 const mongoose = require('mongoose')
 const multer = require('multer')
 const path = require('path')
@@ -112,7 +114,6 @@ router.get('/userList', async function (req, res) {
       })
     }
 
-    console.log("queryArray", queryArray);
     let userData = await userModel.aggregate(queryArray)
     if (req.query.sortByDate == "sortbyDate" || req.query.search) {
       return res.render('partials/userList', {
@@ -131,4 +132,13 @@ router.get('/userList', async function (req, res) {
     console.log(error)
   }
 })
+
+router.get('/report', async function(req,res){
+  let statisticData = await statisticsModel.find({}).lean()
+  res.render('dashboard/report',{
+    title : "Report",
+    statisticData : statisticData
+  })
+})
+
 module.exports = router;

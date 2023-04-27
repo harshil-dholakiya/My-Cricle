@@ -39,10 +39,10 @@
 
               <select class="form-select sort" aria-label="Default select example">
                 <option selected value="">Sort By</option>
-                <option value="title">
+                <option value="title" data-sorting="1">
                   Title
                 </option>
-                <option value="createdOn">
+                <option value="createdOn" data-sorting="1">
                   Date & Time
                 </option>
                 <input type="hidden" value="" class="sortType">
@@ -62,9 +62,14 @@
                 <input type="hidden" value="" class="type">
               </select>
 
+              <span class="btn btn-primary report">
+                  Report
+              </span>
+
             </div>
 
             <div class="btn-list">
+
               <span class="d-none d-sm-inline">
                 <a href="/users/userList" class="btn sort" data-sort="title">
                   All Users
@@ -72,8 +77,8 @@
               </span>
 
               <span class="d-none d-sm-inline">
-                <a href="javascript:void(0)" class="btn savedPost" data-sort="title">
-                  Saved post
+                <a href="javascript:void(0)" class="btn savedPost">
+                  Saved Post
                 </a>
               </span>
 
@@ -102,6 +107,7 @@
           {{/if}}
         </div>
       </div>
+    <div class="reportDiv"></div>
     </div>
     <div class="col-12 mt-3 bodyDiv">
       {{>posts}}

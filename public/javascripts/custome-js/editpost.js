@@ -53,7 +53,7 @@ $(document).ready(function () {
                     location.href = '/'
                 },
                 error: function (res) {
-                    alert("Error from on EDITPOST")
+                    alert("jpg jpeg gif png file allowed(size : 2Mb)")
                 }
             })
         }

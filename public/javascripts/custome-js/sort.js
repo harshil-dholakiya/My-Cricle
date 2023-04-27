@@ -1,7 +1,9 @@
 $(document).off('change', '.sort').on('change', '.sort', function () {
     let sortField = this.value
+    let selected = $(this).find(':selected')
+    let sortOrder = $(this).find(':selected').data('sorting')
     
-    let url = `/?sortField=${sortField}&sortOrder=-1`
+    let url = `/?sortField=${sortField}&sortOrder=${sortOrder}`
     if ($('.type').val()) {
         url += `&${$('.type').val()}`
     }
@@ -16,7 +18,8 @@ $(document).off('change', '.sort').on('change', '.sort', function () {
         url: `${url}`,
         success: function (data) {
             $(".bodyDiv").html(data)
-            $this.next().val(`sortField=${sortField}&sortOrder=-1`)
+            let newSortOrder = (sortOrder == "1") ? "-1" : "1";
+            selected.data('sorting', newSortOrder)
         },
         error: function (data) {
             alert("Error from on click")

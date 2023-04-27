@@ -75,7 +75,7 @@ router.get('/', async function (req, res) {
       }
     }];
     let countuserFilterObj = {};
-    if (req.query.type == "mine" || req.query.savedPost == "savedPost") {
+    if (req.query.type == "mine") {
       countuserFilterObj = {
         $match: {
           _id: new mongoose.Types.ObjectId(req.user._id)
@@ -93,6 +93,7 @@ router.get('/', async function (req, res) {
     }
 
     if (req.query.sortField && req.query.sortOrder) {
+      console.log("req.query.sortOrder", req.query.sortOrder);
       let sortStage = {
         "$sort": {
         }
@@ -102,45 +103,31 @@ router.get('/', async function (req, res) {
     }
 
     if (req.query.savedPost == "savedPost") {
+      let savedPostIds = await savedPostModel.distinct("postId", { userId: req.user._id });
+      let savedPostUserIds = await postModel.distinct("userId", { _id: { $in: savedPostIds } });
+
+      countDocuments.push({
+        $match: {
+          _id: {
+            $in: savedPostUserIds
+          }
+        }
+      });
+
       countDocuments.push({
         $lookup: {
-          from: "savedPost",
+          from: "posts",
           let: {
             userId: "$_id"
           },
           pipeline: [{
             $match: {
-              $expr: {
-                $eq: ['$$userId', '$userId']
-              }
-            }
-          }, {
-            $group: {
-              _id: "",
-              postIds: {
-                $push: "$postId"
-              }
+              $and: [{ $expr: { $eq: ['$$userId', '$userId'] } }, { 'isArchive': false }, { _id: { $in: savedPostIds } }]
             }
           }],
           as: 'postdata'
         }
       }, {
-        $unwind: "$postdata"
-      },
-        {
-          $lookup: {
-            from: "posts",
-            let: {
-              postIds: "$postdata.postIds"
-            },
-            pipeline: [{
-              $match: {
-                $and: [{ $expr: { $in: ['$_id', '$$postIds'] } }, { 'isArchive': false }]
-              }
-            }],
-            as: 'postdata'
-          }
-        }, {
         $unwind: "$postdata"
       });
     } else {
@@ -183,6 +170,7 @@ router.get('/', async function (req, res) {
     let data = await userModel.aggregate(countDocuments)
     var page = data.length
 
+    // =================== Get Post Query ========================
     let aggregateQuery = [];
     let postPipeline = [{
       $match: {
@@ -190,7 +178,7 @@ router.get('/', async function (req, res) {
       }
     }];
     let userFilterObj = {};
-    if (req.query.type == "mine" || req.query.savedPost == "savedPost") {
+    if (req.query.type == "mine") {
       userFilterObj = {
         $match: {
           _id: new mongoose.Types.ObjectId(req.user._id)
@@ -217,45 +205,31 @@ router.get('/', async function (req, res) {
     }
 
     if (req.query.savedPost == "savedPost") {
+      let savedPostIds = await savedPostModel.distinct("postId", { userId: req.user._id });
+      let savedPostUserIds = await postModel.distinct("userId", { _id: { $in: savedPostIds } });
+
+      aggregateQuery.push({
+        $match: {
+          _id: {
+            $in: savedPostUserIds
+          }
+        }
+      });
+
       aggregateQuery.push({
         $lookup: {
-          from: "savedPost",
+          from: "posts",
           let: {
             userId: "$_id"
           },
           pipeline: [{
             $match: {
-              $expr: {
-                $eq: ['$$userId', '$userId']
-              }
-            }
-          }, {
-            $group: {
-              _id: "",
-              postIds: {
-                $push: "$postId"
-              }
+              $and: [{ $expr: { $eq: ['$$userId', '$userId'] } }, { 'isArchive': false }, { _id: { $in: savedPostIds } }]
             }
           }],
           as: 'postdata'
         }
       }, {
-        $unwind: "$postdata"
-      },
-        {
-          $lookup: {
-            from: "posts",
-            let: {
-              postIds: "$postdata.postIds"
-            },
-            pipeline: [{
-              $match: {
-                $and: [{ $expr: { $in: ['$_id', '$$postIds'] } }, { 'isArchive': false }]
-              }
-            }],
-            as: 'postdata'
-          }
-        }, {
         $unwind: "$postdata"
       });
     } else {
@@ -376,8 +350,8 @@ router.get('/', async function (req, res) {
       }
     );
 
-    console.log("aggregateQuery", aggregateQuery);
     let savedPost = await savedPostModel.distinct('postId', { "userId": { $eq: req.user?._id } }, { 'postId': 1 })
+
     // Final Query
     let postData = await userModel.aggregate(aggregateQuery);
 

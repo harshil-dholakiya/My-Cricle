@@ -14,8 +14,6 @@ $(document).off('click', '.pages').on('click', '.pages', function () {
     if ($('.rounded').val()) {
         url += `&search=${$('.rounded').val()}`
     }
-    
-    console.log("=======",url);
     $.ajax({
         type: "GET",
         url: `${url}`,

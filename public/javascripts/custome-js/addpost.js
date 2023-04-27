@@ -43,7 +43,7 @@ $(document).ready(function () {
                     }
                 },
                 error: function () {
-                    alert('Please Enter Valid Image');
+                    alert("jpg jpeg gif png file allowed(size : 2Mb)")
                 }
             })
         }
