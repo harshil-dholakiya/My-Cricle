@@ -10,15 +10,15 @@ const mongoose = require('mongoose')
 
 router.get('/sign-in', function (req, res, next) {
   try {
-    if (req.isAuthenticated()) {
-      res.redirect('/')
-    } else {
+    // if (req.isAuthenticated()) {
+    //   res.redirect('/')
+    // } else {
       return res.render('index/sign-in',
         {
           title: 'Sign in',
           layout: 'auth'
         });
-    }
+    // }
   } catch (error) {
     res.send({ type: "error", message: "Hii" })
   }
@@ -46,15 +46,16 @@ router.post('/sign-in', async function (req, res, next) {
 
 router.get('/sign-up', function (req, res, next) {
   try {
-    if (req.isAuthenticated()) {
-      return res.redirect('/')
-    }
+    // if (req.isAuthenticated()) {
+    //   return res.redirect('/')
+    // }
     return res.render('index/sign-up',
       {
         title: 'Sign Up',
         layout: 'auth'
       });
-  } catch (error) {
+  } 
+  catch (error) {
     res.send({ type: "error" })
   }
 });
@@ -416,15 +417,15 @@ router.get('/check-email', async function (req, res, next) {
 // sign-in Page get route
 router.get('/sign-in', function (req, res, next) {
   try {
-    if (req.isAuthenticated()) {
-      res.redirect('/')
-    } else {
+    // if (req.isAuthenticated()) {
+    //   res.redirect('/')
+    // } else {
       return res.render('index/sign-in',
         {
           title: 'Sign in',
           layout: 'auth'
         });
-    }
+    // }
   } catch (error) {
     res.send({ type: "error", message: "Hii" })
   }
