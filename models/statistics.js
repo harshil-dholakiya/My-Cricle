@@ -8,6 +8,9 @@ let statisticsModel = function () {
         },
     };
     const statisticsSchema = new mongoose.Schema({
+        userId : {
+            type : mongoose.Types.ObjectId
+        },
         totalSavedPost: {
             type: Number
         },

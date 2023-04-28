@@ -151,6 +151,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use(function (req, res, next) {
+  res.locals.imageFormat = req.flash('imageFormat')
   res.locals.flashMessage = req.flash('error')
   next()
 })
@@ -196,26 +197,27 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-const job = new CronJob(
-  '*/15 * * * *',
-  async function () {
-    let totalPost = await postModel.countDocuments({
-      createdOn: {
-        $gte: moment().subtract(1, "minutes"),
-        $lte: moment(),
-      },
-    })
-    let totalSavedPost = await savedPostModel.countDocuments({
-      createdOn: {
-        $gte: moment().subtract(1, "minutes"),
-        $lte: moment(),
-      },
-    })
-    await statisticsModel.create({ totalCreatedPost: totalPost, totalSavedPost: totalSavedPost })
-  },
-  null,
-  true,
-);
 
+require('./cron')
+// const job = new CronJob(
+//   '*/15 * * * *',
+//   async function () {
+//     let totalPost = await userModel.countDocuments({
+//       createdOn: {
+//         $gte: moment().subtract(15, "minutes"),
+//         $lte: moment(),
+//       },
+//     })
+//     let totalSavedPost = await savedPostModel.countDocuments({
+//       createdOn: {
+//         $gte: moment().subtract(1, "minutes"),
+//         $lte: moment(),
+//       },
+//     })
+//     await statisticsModel.create({ totalCreatedPost: totalPost, totalSavedPost: totalSavedPost })
+//   },
+//   null,
+//   true,
+// );
 
 module.exports = app;

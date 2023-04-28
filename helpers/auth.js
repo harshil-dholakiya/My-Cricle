@@ -42,7 +42,6 @@ module.exports.commonMiddileware = (app) => {
                         message: 'Please enter valid login details'
                     });
                 } else {
-                    console.log(user);
                     return done(null, user);
                 }
                 // handle catch 
@@ -62,7 +61,6 @@ module.exports.commonMiddileware = (app) => {
 
     passport.deserializeUser(function (user, done) {
         try {
-            // console.log(user);
             done(null, user);
         } catch (error) {
             console.log(error);

@@ -16,15 +16,15 @@ $(document).ready(function () {
         messages: {
             title: {
                 required: "Please enter Post title",
-                maxlength : "Title Must Contain 30 letter"
+                maxlength: "Title Must Contain 30 letter"
             },
             description: {
                 required: "Please enter Post description",
-                maxlength : "description Must Contain 300 letter"
+                maxlength: "description Must Contain 300 letter"
 
             },
             postImage: {
-                required: "Please Post Image"
+                required: "Please select an image to upload"
             }
         },
 
@@ -38,12 +38,20 @@ $(document).ready(function () {
                 contentType: false,
                 processData: false,
                 success: function (data) {
+                    console.log("data",data)
+                    if (data.type == "error") {
+                        $("#postImage").css("border", 'solid 1px red');
+                        $(`.toggle`).css('display' , '')
+                    }
+                    if (data.type == "tooLarge") {
+                        $("#postImage").css("border", 'solid 1px red');
+                        $(`.fileSizeValidator`).css('display' , '')
+                    }
                     if (data.type == "success") {
                         location.href = "/"
                     }
                 },
                 error: function () {
-                    alert("jpg jpeg gif png file allowed(size : 2Mb)")
                 }
             })
         }

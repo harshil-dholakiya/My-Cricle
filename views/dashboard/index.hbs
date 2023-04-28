@@ -36,7 +36,6 @@
             </div>
             {{#if userDetails}}
             <div class="col-auto ms-auto d-print-none d-flex">
-
               <select class="form-select sort" aria-label="Default select example">
                 <option selected value="">Sort By</option>
                 <option value="title" data-sorting="1">
@@ -61,11 +60,9 @@
                 </option>
                 <input type="hidden" value="" class="type">
               </select>
-
               <span class="btn btn-primary report">
-                  Report
+                Report
               </span>
-
             </div>
 
             <div class="btn-list">
@@ -94,7 +91,6 @@
               </a>
               <a href="#" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal"
                 data-bs-target="#modal-report" aria-label="Create new report">
-                <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
                   stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -107,7 +103,7 @@
           {{/if}}
         </div>
       </div>
-    <div class="reportDiv"></div>
+      <div class="reportDiv"></div>
     </div>
     <div class="col-12 mt-3 bodyDiv">
       {{>posts}}
@@ -143,7 +139,7 @@
           <ul class="list-inline list-inline-dots mb-0">
             <li class="list-inline-item">
               Copyright &copy; 2023
-              <a href="." class="link-secondary">Tabler</a>.
+              <a href="." class="link-secondary">My Cricle</a>.
               All rights reserved.
             </li>
             <li class="list-inline-item">
@@ -161,7 +157,7 @@
 
   <div class="modal modal-blur fade" id="modal-report" tabindex="-1" role="dialog" aria-hidden="true">
     <form action="/posts/add-post" method="post" id="addPostForm" enctype="multipart/form-data">
-      <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-dialog modal-lg has-error" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">New post</h5>
@@ -180,11 +176,16 @@
                 placeholder="Your Post Description">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 fileClass">
               <label class="form-label">File Upload</label>
               <input type="file" class="form-control" name="postImage" id="postImage" placeholder="Your Post Photo">
             </div>
-
+            <div class="fileSizeValidator" style="display: none; color:brown">
+              File size mst be lessthan 2Mb
+            </div>
+            <div class="toggle" style="display: none; color:brown">
+              Only png,jpg,jpeg,gif allowed
+            </div>
           </div>
           <div class="modal-footer">
             <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
@@ -240,6 +241,18 @@
               placeholder="Your Post Description">
 
           </div>
+
+          {{!-- --}}
+
+          <div class="fileSizeValidator" style="display: none; color:brown">
+            File size mst be lessthan 2Mb
+          </div>
+          <div class="toggle" style="display: none; color:brown">
+            Only png,jpg,jpeg,gif allowed
+          </div>
+
+          {{!-- --}}
+          
           <div class="modal-footer">
             <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
               Cancel

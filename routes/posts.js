@@ -5,8 +5,67 @@ const multer = require('multer')
 const path = require('path')
 const savedPostModel = require('../models/save-post');
 const { default: mongoose } = require('mongoose');
+const { log } = require('handlebars/runtime');
 
-let maxSize = 2000000;
+// let maxSize = 2000000;
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, './public/images/posts');
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, req.user._id + '-' + Date.now()
+//             + path.extname(file.originalname))
+//     },
+//     onFileUploadStart: function (file, req, res) {
+//         if (req.file.length > maxSize) {
+//             return false;
+//         }
+//     }
+// });
+
+// // Checking File Ext
+// const checkFileType = function (file, cb) {
+//     //Allowed file extensions
+//     const fileTypes = /jpeg|jpg|png|gif/;
+
+//     //check extension names
+//     const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
+
+//     const mimeType = fileTypes.test(file.mimetype);
+
+//     if (mimeType && extName) {
+//         return cb(null, true);
+//     } else {
+//         cb("Error: You can Only Upload Images!!");
+//     }
+// };
+
+// const upload = multer({
+//     storage: storage,
+//     limits: { fileSize: maxSize },
+//     fileFilter: (req, file, cb) => {
+//         req.flash('imageFormat', "Wrong Format")
+//         checkFileType(file, cb);
+//     },
+// });
+
+// // Add Post
+// router.post('/add-post', upload.single("postImage"), async function (req, res) {
+//     try {
+//         req.body.postPath = req.file.filename
+//         let { title, description, postPath } = req.body
+//         await postModel.create({
+//             title, description, postPath,
+//             userId: req.user._id
+//         })
+//         return res.send({ type: "success" })
+//     } catch (error) {
+//         console.log(error)
+//         res.send({ type: "error" })
+//     }
+// })
+
+///////////////////////////////////////////////////////////////
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './public/images/posts');
@@ -15,15 +74,16 @@ const storage = multer.diskStorage({
         cb(null, req.user._id + '-' + Date.now()
             + path.extname(file.originalname))
     },
-    onFileUploadStart: function(file, req, res){
-        if(req.file.length > maxSize) {
-          return false;
-        }
-      }
+    // onFileUploadStart: function (file, req, res) {
+    //     if (req.file.length > maxSize) {
+    //     req.fileValidationError = 'error';
+    //         return false;
+    //     }
+    // }
 });
 
-//Checking File Ext
-const checkFileType = function (file, cb) {
+// Checking File Ext
+const checkFileType = function (req, file, cb) {
     //Allowed file extensions
     const fileTypes = /jpeg|jpg|png|gif/;
 
@@ -31,39 +91,55 @@ const checkFileType = function (file, cb) {
     const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
 
     const mimeType = fileTypes.test(file.mimetype);
-
     if (mimeType && extName) {
         return cb(null, true);
     } else {
-        cb("Error: You can Only Upload Images!!");
+        req.fileValidationError = 'error';
+        // console.log(req.fileValidationError)
+        // res.send({type : 'error'})
+        return cb(new Error("Error"), false);
     }
 };
 
-// 2000000
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: maxSize },
-    fileFilter: (req, file, cb) => {
-        checkFileType(file, cb);
-    },
-});
+
 
 // Add Post
-router.post('/add-post', upload.single("postImage"), async function (req, res) {
+router.post('/add-post', async function (req, res) {
     try {
-        req.body.postPath = req.file.filename
-        let { title, description, postPath } = req.body
-        await postModel.create({
-            title, description, postPath,
-            userId: req.user._id
-        })
-        return res.send({ type: "success" })
+        let maxSize = 2000000;
+        const upload = multer({
+            storage: storage,
+            limits: { fileSize: maxSize },
+            fileFilter: (req, file, cb) => {
+                checkFileType(req, file, cb);
+            },
+        }).single('postImage');
+
+        upload(req, res, async function (err) {
+            if (req.fileValidationError) {
+                return res.send({ type: 'error' });
+            }
+            if (err) {
+                return res.send({ type: 'tooLarge' });
+            }
+            else if (req.file) {
+                req.body.postPath = req.file.filename
+                let { title, description, postPath } = req.body
+                await postModel.create({
+                    title, description, postPath,
+                    userId: req.user._id
+                })
+                return res.send({ type: "success" })
+            }
+        });
+
     } catch (error) {
         console.log(error)
         res.send({ type: "error" })
     }
 })
 
+///////////////////////////////////////////////////////////
 
 //Save-Unsave Post
 router.put('/savePost', async function (req, res) {
@@ -94,7 +170,7 @@ router.put('/archivePost', async function (req, res) {
         if (req.body.archiveOrNot == "unarchive") {
             query = { isArchive: true }
         }
-        let data = await postModel.updateOne({ _id : postId, userId: userId }, { $set : { ...query } })
+        let data = await postModel.updateOne({ _id: postId, userId: userId }, { $set: { ...query } })
         return res.send({ type: "success" })
 
     } catch (error) {
@@ -110,14 +186,45 @@ router.get('/', async function (req, res) {
     }
 })
 
-router.put('/postId',upload.single("file"),  async function (req, res, next) {
+// router.put('/postId', upload.single("file"), async function (req, res, next) {
+//     try {
+//         let fileName = req.file?.filename
+//         await postModel.updateOne({ "_id": req.body.editPostId }, { $set: { title: req.body.editTitle, description: req.body.editDescription, postPath: fileName } })
+//         return res.send({ type: "success" })
+//     } catch (error) {
+//         console.log(error)
+//         res.send({ type: "error" })
+//     }
+// })
+
+router.put('/postId', async function (req, res, next) {
     try {
-        let fileName = req.file?.filename
-        await postModel.updateOne({ "_id": req.body.editPostId }, { $set: { title: req.body.editTitle, description: req.body.editDescription , postPath : fileName } })
-        return res.send({ type: "success" })
+        let maxSize = 2000000;
+        const upload = multer({
+            storage: storage,
+            limits: { fileSize: maxSize },
+            fileFilter: (req, file, cb) => {
+                checkFileType(req, file, cb);
+            },
+        }).single('file');
+
+        upload(req, res, async function (err) {
+            if (req.fileValidationError) {
+                return res.send({ type: 'error' });
+            }
+            if (err) {
+                return res.send({ type: 'tooLarge' });
+            }
+            else if (req.file) {
+                let fileName = req.file?.filename
+                await postModel.updateOne({ "_id": req.body.editPostId }, { $set: { title: req.body.editTitle, description: req.body.editDescription, postPath: fileName } })
+                return res.send({ type: "success" })
+            }
+        });
+
     } catch (error) {
         console.log(error)
-        res.send({type : "error"})
+        res.send({ type: "error" })
     }
 })
 module.exports = router;    

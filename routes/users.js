@@ -134,7 +134,7 @@ router.get('/userList', async function (req, res) {
 })
 
 router.get('/report', async function(req,res){
-  let statisticData = await statisticsModel.find({}).lean()
+  let statisticData = await statisticsModel.find({ userId : req.user._id}).lean()
   res.render('dashboard/report',{
     title : "Report",
     statisticData : statisticData
