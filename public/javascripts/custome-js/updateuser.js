@@ -32,28 +32,27 @@ $(document).ready(function () {
             }
         },
         submitHandler: function (form) {
-                console.log("Form submitted");
-                    console.log("updateUserForm submit");
-                    var form = $('form')[0];
-                    var formData = new FormData(form);
-                    formData.append('fileUpload', $('input[type=file]')[0].files[0]);
-                    $.ajax({
-                        url: '/users/updateUser',
-                        type: 'post',
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: function (data) {
-                            console.log("success");
-                            if (data.type == "success") {
-                                location.href = "/"
-                            }
-                        },
-                        error: function () {
-                            alert('Please Enter Valid Image');
-                        }
-                    })
-             
+            var form = $('form')[0];
+            const formData = new FormData(form);
+            formData.append('fileUpload', $('input[type=file]')[0].files[0]);
+            $.ajax({
+                url: '/users/updateUser',
+                type: 'post',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    console.log(data);
+                    // console.log("success");
+                    if (data.type == "success") {
+                        location.href = "/"
+                    }
+                },
+                error: function () {
+                    alert('Please Enter Valid Image');
+                }
+            })
+
         }
     })
 });

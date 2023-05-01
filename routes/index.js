@@ -10,17 +10,13 @@ const mongoose = require('mongoose')
 
 router.get('/sign-in', function (req, res, next) {
   try {
-    // if (req.isAuthenticated()) {
-    //   res.redirect('/')
-    // } else {
-      return res.render('index/sign-in',
-        {
-          title: 'Sign in',
-          layout: 'auth'
-        });
-    // }
+    return res.render('index/sign-in',
+      {
+        title: 'Sign in',
+        layout: 'auth'
+      });
   } catch (error) {
-    res.send({ type: "error", message: "Hii" })
+    res.send({ type: "error", message: "error" })
   }
 });
 
@@ -46,15 +42,12 @@ router.post('/sign-in', async function (req, res, next) {
 
 router.get('/sign-up', function (req, res, next) {
   try {
-    // if (req.isAuthenticated()) {
-    //   return res.redirect('/')
-    // }
     return res.render('index/sign-up',
       {
         title: 'Sign Up',
         layout: 'auth'
       });
-  } 
+  }
   catch (error) {
     res.send({ type: "error" })
   }
@@ -414,41 +407,25 @@ router.get('/check-email', async function (req, res, next) {
   }
 });
 
-// sign-in Page get route
-router.get('/sign-in', function (req, res, next) {
-  try {
-    // if (req.isAuthenticated()) {
-    //   res.redirect('/')
-    // } else {
-      return res.render('index/sign-in',
-        {
-          title: 'Sign in',
-          layout: 'auth'
-        });
-    // }
-  } catch (error) {
-    res.send({ type: "error", message: "Hii" })
-  }
-});
 
-//Login Page
-router.post('/sign-in', async function (req, res, next) {
-  passport.authenticate('local', function (err, user, info) {
-    if (err) {
-      return next(err)
-    }
-    if (!user) {
-      req.flash('error', 'Please provide valid login details')
-      return res.redirect('/sign-in');
-    }
-    req.logIn(user, function (err) {
-      if (err) {
-        return next(err);
-      }
-      return res.redirect('/');
-    });
-  })(req, res, next);
-});
+// //Login Page
+// router.post('/sign-in', async function (req, res, next) {
+//   passport.authenticate('local', function (err, user, info) {
+//     if (err) {
+//       return next(err)
+//     }
+//     if (!user) {
+//       req.flash('error', 'Please provide valid login details')
+//       return res.redirect('/sign-in');
+//     }
+//     req.logIn(user, function (err) {
+//       if (err) {
+//         return next(err);
+//       }
+//       return res.redirect('/');
+//     });
+//   })(req, res, next);
+// });
 
 router.get('/logout', function (req, res, next) {
   try {

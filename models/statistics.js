@@ -16,6 +16,9 @@ let statisticsModel = function () {
         },
         totalCreatedPost: {
             type: Number
+        },
+        totalsavedByuser: {
+            type: Number
         }
     }, options)
 

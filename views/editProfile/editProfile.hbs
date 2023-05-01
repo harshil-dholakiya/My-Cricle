@@ -91,8 +91,8 @@
 
                       <div class="col-md">
                         <div class="form-label">Gender</div>
-                        <input type="radio" name="gender" value="male"> Male<br>
-                        <input type="radio" name="gender" value="female"> Female
+                        <input type="radio" name="gender" value="male" {{#compare userData.gender "==" "male"}}checked{{/compare}}> Male<br>
+                        <input type="radio" name="gender" value="female" {{#compare userData.gender "==" "female"}}checked{{/compare}}> Female
                       </div>
                     </div>
                   </div>

@@ -2,15 +2,17 @@ var express = require('express');
 var router = express.Router();
 const userModel = require('../models/users')
 const statisticsModel = require('../models/statistics')
-
+const moment = require('moment')
 const mongoose = require('mongoose')
 const multer = require('multer')
-const path = require('path')
+const path = require('path');
+const { log } = require('handlebars/runtime');
 
 /* GET users listing. */
 router.get('/editProfile', async function (req, res, next) {
   try {
     let userData = await userModel.findOne({ "_id": req.user._id }, { 'firstName': 1, "lastName": 1, "email": 1, 'gender': 1, 'profilePath': 1 }).lean()
+    console.log("userData======>", userData);
     return res.render('editProfile/editProfile', {
       title: "Edit Profile",
       userData: userData
@@ -58,10 +60,9 @@ const upload = multer({
 router.post('/updateUser', upload.single("fileUpload"), async function (req, res) {
   try {
     req.body.profilePath = req.file?.filename
-    // const profilePath = req.file.path
     let { firstName, lastName, email, gender, profilePath } = req.body
     await userModel.updateOne({ _id: new mongoose.Types.ObjectId(req.user._id) }, { $set: { "firstName": firstName, "lastName": lastName, "email": email, "gender": gender, "profilePath": profilePath } });
-    res.send({ type: "success" })
+    return res.send({ type: "success" })
   } catch (error) {
     console.log(error);
     res.send({ type: "Please upload a valid image" })
@@ -133,11 +134,25 @@ router.get('/userList', async function (req, res) {
   }
 })
 
-router.get('/report', async function(req,res){
-  let statisticData = await statisticsModel.find({ userId : req.user._id}).lean()
-  res.render('dashboard/report',{
-    title : "Report",
-    statisticData : statisticData
+router.get('/report', async function (req, res) {
+  let savedPostArray = []
+  let createPostArray = []
+  let createOnArray = []
+
+  let statisticData = await statisticsModel.find({ userId: req.user._id }).lean()
+
+  for (let i = 0; i < statisticData.length; i++) {
+    createOnArray.push(moment(statisticData[i].createdOn).format('YYYY_MM_DD_hh_mm'))
+    savedPostArray.push(statisticData[i].totalSavedPost)
+    createPostArray.push(statisticData[i].totalCreatedPost)
+  }
+
+  res.render('dashboard/report', {
+    title: "Report",
+    statisticData: statisticData,
+    savedPostArray: savedPostArray,
+    createPostArray: createPostArray,
+    createOnArray: createOnArray
   })
 })
 

@@ -6,8 +6,7 @@ const postModel = require('./models/posts')
 const savedPostModel = require('./models/save-post');
 const { create } = require('hbs');
 const moment = require('moment');
-const { response } = require('./app');
-
+// const { response } = require('./app');
 
 async function aggregateCron(userIds) {
     var statisticsData = await userModel.aggregate([
@@ -59,33 +58,63 @@ async function aggregateCron(userIds) {
             }
         }
     ])
+
+    var userSavedPost = await userModel.aggregate([
+        {
+            $match: {
+                _id: userIds
+            }
+        },
+        {
+            $lookup: {
+                from: 'savedPost',
+                localField: '_id',
+                foreignField: 'userId',
+                as: 'totalSavedPost'
+            }
+        },
+        {
+            $project: {
+                'totalSavedPost': { $size: '$totalSavedPost' }
+            }
+        }
+    ])
+
+    for (const users of userSavedPost) {
+        var post = users.totalSavedPost
+    }
     let count = 0
     for (let user of statisticsData[0].totalPostOfUser) {
         if (user.totalSavedPost > 0) {
             count += user.totalSavedPost
-
         }
     }
     for (const userTotalPost of statisticsData) {
         var totalPost = userTotalPost.totalPost
     }
-    return { "totalPost": totalPost, "totalSavedCount": count }
+    return { "totalPost": totalPost, "totalSavedCount": count, "savedPostByUser": post }
 }
 
 async function userDetails() {
     let users = await userModel.find({})
     for (const userIds of users) {
-
         let counter = await aggregateCron(userIds._id)
+        console.log(counter);
         let postCount = counter.totalPost
         let savedPostCount = counter.totalSavedCount
-
-        await statisticsModel.create({ totalCreatedPost: postCount, totalSavedPost: savedPostCount, userId: userIds._id })
+        let totalsavedByuser = counter.totalsavedByuser
+        await statisticsModel.create({ totalCreatedPost: postCount, totalSavedPost: savedPostCount,  totalsavedByuser : totalsavedByuser , userId: userIds._id })
     }
 }
+
+userDetails()
+
 const job = new CronJob(
-    '* * * * * ',
-    userDetails(),
+    '*/30 * * * *',
+    // '*  * * * *',
+    function () {
+        // userDetails()
+    },
     null,
     true,
 )

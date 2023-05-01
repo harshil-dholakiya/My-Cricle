@@ -16,13 +16,27 @@ const flash = require('connect-flash');
 const userModel = require('./models/users');
 const moment = require('moment')
 const handlebars = require('handlebars-helpers')()
-
 const savedPostModel = require('./models/save-post');
 const postModel = require('./models/posts');
 const { log } = require('handlebars/runtime');
 const CronJob = require('cron').CronJob;
 const statisticsModel = require('./models/statistics')
+const fs = require('fs')
 
+
+fs.mkdir(path.join(__dirname, ''), (err) => {
+  if (err) {
+    return console.error(err);
+  }
+  console.log('Directory created successfully!');
+});
+
+fs.mkdir(path.join(__dirname, '/public/images/users'), (err) => {
+  if (err) {
+    return console.error(err);
+  }
+  console.log('Directory created successfully!');
+});
 
 try {
   mongoose.connect(process.env.connectionString)
@@ -125,6 +139,7 @@ app.use(cookieSession({
   secret: "session",
   key: "abhH4re5Uf4Rd0KnddSsdf05f3V",
 }));
+
 //express session
 app.use(session({
   secret: "abhH4re5Uf4Rd0KnddS05sdff3V",
