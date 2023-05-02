@@ -2,7 +2,8 @@
 <div class="card" style="width: 600px; margin-top : 30px">
     <div class="row row-0">
         <div class="col-3">
-            <img src="/images/users/{{#if profilePath}}{{profilePath}}{{else}}defaultAvatar.jpg{{/if}}" class="w-100 h-100 object-fit card-img-start">
+            <img src="/images/users/{{#if profilePath}}{{profilePath}}{{else}}defaultAvatar.jpg{{/if}}"
+                class="w-100 h-100 object-fit card-img-start">
         </div>
         <div class="col">
             <div class="card-body">
@@ -10,7 +11,8 @@
                 <p class="card-title text-muted">{{email}}</p>
                 <p class="text-muted">Created post : <span style="color : black">{{postCreatedByUser}}</span></p>
                 <p class="text-muted">Saved post : <span style="color : black">{{savedPost}}</span></p>
-                <p class="text-muted">Registration Date : <span style="color : black">{{dateFormat createdOn "MMMM Do YYYY"}}</span></p>
+                <p class="text-muted">Registration Date : <span style="color : black">{{dateFormat createdOn "MMMM Do
+                        YYYY"}}</span></p>
             </div>
         </div>
     </div>

@@ -8,19 +8,25 @@
         var savedPostArray = [{{ savedPostArray }}];
         var createPostArray = [{{ createPostArray }}];
         var createOnArray = [{{ createOnArray }}];
+        var totalPostsavedByUser = [{{totalPostsavedByUser}}]
         new Chart("myChart", {
             type: "line",
             data: {
                 labels: createOnArray,
                 datasets: [{
-                    label : "how many saved Your post" ,
+                    label : "how many people saved Your post" ,
                     data: savedPostArray,
                     borderColor: "green",
                     fill: false
                 }, {
-                    label : "how many you created post" ,
+                    label : "how many post you created" ,
                     data: createPostArray,
                     borderColor: "blue",
+                    fill: false
+                },{
+                    label : "how many post you saved" ,
+                    data: totalPostsavedByUser,
+                    borderColor: "orange",
                     fill: false
                 }]
             },

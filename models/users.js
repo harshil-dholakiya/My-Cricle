@@ -12,6 +12,13 @@ let usersModel = function () {
             type: String,
             required: true
         },
+        verifyToken : {
+            type : String,
+        },
+        isVerified : {
+            type : Boolean,
+            default : false
+        },
         firstName: {
             type: String,
             required: true

@@ -7,65 +7,7 @@ const savedPostModel = require('../models/save-post');
 const { default: mongoose } = require('mongoose');
 const { log } = require('handlebars/runtime');
 
-// let maxSize = 2000000;
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         cb(null, './public/images/posts');
-//     },
-//     filename: function (req, file, cb) {
-//         cb(null, req.user._id + '-' + Date.now()
-//             + path.extname(file.originalname))
-//     },
-//     onFileUploadStart: function (file, req, res) {
-//         if (req.file.length > maxSize) {
-//             return false;
-//         }
-//     }
-// });
 
-// // Checking File Ext
-// const checkFileType = function (file, cb) {
-//     //Allowed file extensions
-//     const fileTypes = /jpeg|jpg|png|gif/;
-
-//     //check extension names
-//     const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
-
-//     const mimeType = fileTypes.test(file.mimetype);
-
-//     if (mimeType && extName) {
-//         return cb(null, true);
-//     } else {
-//         cb("Error: You can Only Upload Images!!");
-//     }
-// };
-
-// const upload = multer({
-//     storage: storage,
-//     limits: { fileSize: maxSize },
-//     fileFilter: (req, file, cb) => {
-//         req.flash('imageFormat', "Wrong Format")
-//         checkFileType(file, cb);
-//     },
-// });
-
-// // Add Post
-// router.post('/add-post', upload.single("postImage"), async function (req, res) {
-//     try {
-//         req.body.postPath = req.file.filename
-//         let { title, description, postPath } = req.body
-//         await postModel.create({
-//             title, description, postPath,
-//             userId: req.user._id
-//         })
-//         return res.send({ type: "success" })
-//     } catch (error) {
-//         console.log(error)
-//         res.send({ type: "error" })
-//     }
-// })
-
-///////////////////////////////////////////////////////////////
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './public/images/posts');
@@ -74,12 +16,6 @@ const storage = multer.diskStorage({
         cb(null, req.user._id + '-' + Date.now()
             + path.extname(file.originalname))
     },
-    // onFileUploadStart: function (file, req, res) {
-    //     if (req.file.length > maxSize) {
-    //     req.fileValidationError = 'error';
-    //         return false;
-    //     }
-    // }
 });
 
 // Checking File Ext
@@ -100,8 +36,6 @@ const checkFileType = function (req, file, cb) {
         return cb(new Error("Error"), false);
     }
 };
-
-
 
 // Add Post
 router.post('/add-post', async function (req, res) {
@@ -139,7 +73,6 @@ router.post('/add-post', async function (req, res) {
     }
 })
 
-///////////////////////////////////////////////////////////
 
 //Save-Unsave Post
 router.put('/savePost', async function (req, res) {
@@ -166,11 +99,12 @@ router.put('/archivePost', async function (req, res) {
     try {
         let query = { isArchive: false }
         const postId = req.body.postId
+        
         const userId = req.user._id
         if (req.body.archiveOrNot == "unarchive") {
             query = { isArchive: true }
-        }
-        let data = await postModel.updateOne({ _id: postId, userId: userId }, { $set: { ...query } })
+        }   
+        await postModel.updateOne({ _id: postId, userId: userId }, { $set: { ...query } })
         return res.send({ type: "success" })
 
     } catch (error) {
@@ -185,17 +119,6 @@ router.get('/', async function (req, res) {
         res.send(postData)
     }
 })
-
-// router.put('/postId', upload.single("file"), async function (req, res, next) {
-//     try {
-//         let fileName = req.file?.filename
-//         await postModel.updateOne({ "_id": req.body.editPostId }, { $set: { title: req.body.editTitle, description: req.body.editDescription, postPath: fileName } })
-//         return res.send({ type: "success" })
-//     } catch (error) {
-//         console.log(error)
-//         res.send({ type: "error" })
-//     }
-// })
 
 router.put('/postId', async function (req, res, next) {
     try {
@@ -221,10 +144,10 @@ router.put('/postId', async function (req, res, next) {
                 return res.send({ type: "success" })
             }
         });
-
     } catch (error) {
         console.log(error)
         res.send({ type: "error" })
     }
 })
+
 module.exports = router;    

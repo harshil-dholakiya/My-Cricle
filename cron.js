@@ -99,21 +99,17 @@ async function userDetails() {
     let users = await userModel.find({})
     for (const userIds of users) {
         let counter = await aggregateCron(userIds._id)
-        console.log(counter);
         let postCount = counter.totalPost
         let savedPostCount = counter.totalSavedCount
-        let totalsavedByuser = counter.totalsavedByuser
-        await statisticsModel.create({ totalCreatedPost: postCount, totalSavedPost: savedPostCount,  totalsavedByuser : totalsavedByuser , userId: userIds._id })
+        let totalsavedByuser = counter.savedPostByUser
+        await statisticsModel.create({ totalCreatedPost: postCount, totalSavedPost: savedPostCount, totalsavedByuser: totalsavedByuser, userId: userIds._id })
     }
 }
 
-userDetails()
-
 const job = new CronJob(
     '*/30 * * * *',
-    // '*  * * * *',
     function () {
-        // userDetails()
+        userDetails()
     },
     null,
     true,

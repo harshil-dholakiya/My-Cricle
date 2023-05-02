@@ -61,7 +61,7 @@ router.post('/updateUser', upload.single("fileUpload"), async function (req, res
   try {
     req.body.profilePath = req.file?.filename
     let { firstName, lastName, email, gender, profilePath } = req.body
-    await userModel.updateOne({ _id: new mongoose.Types.ObjectId(req.user._id) }, { $set: { "firstName": firstName, "lastName": lastName, "email": email, "gender": gender, "profilePath": profilePath } });
+    await userModel.updateOne({ _id: new mongoose.Types.ObjectId(req.user._id) }, { $set: { "firstName": firstName, "lastName": lastName, "gender": gender, "profilePath": profilePath } });
     return res.send({ type: "success" })
   } catch (error) {
     console.log(error);
@@ -138,10 +138,13 @@ router.get('/report', async function (req, res) {
   let savedPostArray = []
   let createPostArray = []
   let createOnArray = []
+  let totalPostsavedByUser = []
+
 
   let statisticData = await statisticsModel.find({ userId: req.user._id }).lean()
 
   for (let i = 0; i < statisticData.length; i++) {
+    totalPostsavedByUser.push(statisticData[i].totalsavedByuser)
     createOnArray.push(moment(statisticData[i].createdOn).format('YYYY_MM_DD_hh_mm'))
     savedPostArray.push(statisticData[i].totalSavedPost)
     createPostArray.push(statisticData[i].totalCreatedPost)
@@ -149,7 +152,8 @@ router.get('/report', async function (req, res) {
 
   res.render('dashboard/report', {
     title: "Report",
-    statisticData: statisticData,
+    // statisticData: statisticData,
+    totalPostsavedByUser : totalPostsavedByUser,
     savedPostArray: savedPostArray,
     createPostArray: createPostArray,
     createOnArray: createOnArray

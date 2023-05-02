@@ -49,7 +49,8 @@
                                 {{/inArray}}
                                 {{#compare ../_id "===" ../../userDetails._id }}
                                 <a href="javascript: void(0)" class="text-muted" id="editBtn" title="Edit Post"
-                                    data-bs-toggle="modal" data-bs-target="#modal-editPost" data-id="{{_id}}">
+                                    data-bs-toggle="modal" data-bs-target="#modal-editPost" data-id="{{_id}}"
+                                    style="margin-right: 10px;">
 
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="icon icon-tabler icon-tabler-pencil-minus" width="24" height="24"
@@ -62,7 +63,7 @@
                                     </svg>
                                 </a>
 
-                                <a href="javascript:void(0)" class="text-muted" data-archive="unarchive">
+                                <a href="javascript:void(0)" class="text-muted" data-archive="unarchive" title="Archive Post">
                                     <div class="archivePostDiv" data-id="{{_id}}">
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                             class="icon icon-tabler icon-tabler-exposure" width="24" height="24"
@@ -82,8 +83,7 @@
                             </div>
                         </div><br>
                         <div><span class="text-muted">Title : </span> {{title}}</div>
-                        <div><span class="text-muted">Description : </span>
-                            {{description}}</div>
+                        <div><span class="text-muted">Description : </span> {{description}}</div>
                     </div>
                 </div>
             </div>

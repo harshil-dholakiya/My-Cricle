@@ -6,6 +6,9 @@ const savedPostModel = require('../models/save-post')
 const md5 = require('md5');
 const passport = require('passport');
 const mongoose = require('mongoose')
+const nodemailer = require('nodemailer');
+const { use } = require('./users');
+
 
 
 router.get('/sign-in', function (req, res, next) {
@@ -35,6 +38,13 @@ router.post('/sign-in', async function (req, res, next) {
         return next(err);
       }
       return res.redirect('/');
+
+      // if (user.isVerified == true) {
+      //   return res.redirect('/');
+      // } else {
+      //   req.flash('verify' , 'Please Verify your email')
+      //   res.redirect('/sign-in')
+      // }
     });
   })(req, res, next);
 });
@@ -374,29 +384,61 @@ router.get('/', async function (req, res) {
 // sign-up Data post
 router.post('/sign-up-data', async function (req, res, next) {
   try {
+    var verifyToken = Date.now()
     const { firstName, lastName, email, gender, password } = req.body
+    var transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'mycricle01@gmail.com',
+        pass: 'raxpbbvheuesxnea'
+      }
+    });
+
+    var mailOptions = {
+      from: 'mycricle01@gmail.com',
+      to: email,
+      subject: 'Sending Email using Node.js',
+      html: `<h3>Welcome ${firstName} ${lastName} To My-Cricle</h3><br><a href="${process.env.baseUrl}verify-email/${verifyToken}"}> Click to Verify </a>`
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+
     await userModel.create({
       firstName,
       lastName,
       email,
       gender,
+      // verifyToken: verifyToken,
       password: md5(password),
     })
+
+    req.flash("registered", "We sent a mail, Please verfiy Your Email to Login")
     return res.redirect("/sign-in")
 
   } catch (error) {
+    console.log(error);
     res.send({ type: "error" })
   }
 });
 
+router.get('/verify-email/:token', async function (req, res, next) {
+  if (req.params.token) {
+    await userModel.updateOne({ verifyToken: req.params.token }, { isVerified: true })
+    res.render('dashboard/emailverifyPage', {
+      title: 'verify email',
+    })
+  }
+})
+
 router.get('/check-email', async function (req, res, next) {
   try {
     let query = { 'email': req.query.email };
-    if (req.user && req.user._id) {
-      query["_id"] = {
-        $ne: req.user._id
-      }
-    }
     let isEmailExists = await userModel.countDocuments(query)
     if (isEmailExists) {
       return res.send(false)
@@ -406,26 +448,6 @@ router.get('/check-email', async function (req, res, next) {
     res.send({ type: "error" })
   }
 });
-
-
-// //Login Page
-// router.post('/sign-in', async function (req, res, next) {
-//   passport.authenticate('local', function (err, user, info) {
-//     if (err) {
-//       return next(err)
-//     }
-//     if (!user) {
-//       req.flash('error', 'Please provide valid login details')
-//       return res.redirect('/sign-in');
-//     }
-//     req.logIn(user, function (err) {
-//       if (err) {
-//         return next(err);
-//       }
-//       return res.redirect('/');
-//     });
-//   })(req, res, next);
-// });
 
 router.get('/logout', function (req, res, next) {
   try {

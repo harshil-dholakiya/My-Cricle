@@ -22,6 +22,7 @@ const { log } = require('handlebars/runtime');
 const CronJob = require('cron').CronJob;
 const statisticsModel = require('./models/statistics')
 const fs = require('fs')
+const nodemailer = require('nodemailer');
 
 
 fs.mkdir(path.join(__dirname, ''), (err) => {
@@ -168,6 +169,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(function (req, res, next) {
   res.locals.imageFormat = req.flash('imageFormat')
   res.locals.flashMessage = req.flash('error')
+  res.locals.registered = req.flash('registered')
+  res.locals.verify = req.flash('verify')
   next()
 })
 
@@ -179,6 +182,7 @@ app.use(function (req, res, next) {
 })
 
 app.use('/', require('./routes/index'));
+
 
 app.use(function (req, res, next) {
   if (req.isAuthenticated()) {
@@ -212,27 +216,6 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-
 require('./cron')
-// const job = new CronJob(
-//   '*/15 * * * *',
-//   async function () {
-//     let totalPost = await userModel.countDocuments({
-//       createdOn: {
-//         $gte: moment().subtract(15, "minutes"),
-//         $lte: moment(),
-//       },
-//     })
-//     let totalSavedPost = await savedPostModel.countDocuments({
-//       createdOn: {
-//         $gte: moment().subtract(1, "minutes"),
-//         $lte: moment(),
-//       },
-//     })
-//     await statisticsModel.create({ totalCreatedPost: totalPost, totalSavedPost: totalSavedPost })
-//   },
-//   null,
-//   true,
-// );
 
 module.exports = app;

@@ -34,6 +34,7 @@ module.exports.commonMiddileware = (app) => {
                 gender: 1,
                 password: 1,
                 profilePath: 1,
+                isVerified : 1,
                 email: 1,
             }).then(async function (user) {
                 // if user not found
