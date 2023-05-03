@@ -77,7 +77,27 @@ router.get('/', async function (req, res) {
       $match: {
         $and: [{ $expr: { $eq: ['$$userId', '$userId'] } }, { 'isArchive': false }]
       }
-    }];
+    },
+    {
+      $lookup: {
+        from: 'savedPost',
+        let: {
+          postId: '$_id',
+        },
+        pipeline: [{
+          $match: {
+            $expr: { $eq: ['$$postId', '$postId'] }
+          }
+        }],
+        as: 'savedPostArray'
+      }
+    },
+    {
+      $addFields: {
+        'savedPostArray': { $size: '$savedPostArray' },
+      }
+    }
+    ];
     let countuserFilterObj = {};
     if (req.query.type == "mine") {
       countuserFilterObj = {
@@ -180,7 +200,27 @@ router.get('/', async function (req, res) {
       $match: {
         $and: [{ $expr: { $eq: ['$$userId', '$userId'] } }, { 'isArchive': false }]
       }
-    }];
+    },
+    {
+      $lookup: {
+        from: 'savedPost',
+        let: {
+          postId: '$_id',
+        },
+        pipeline: [{
+          $match: {
+            $expr: { $eq: ['$$postId', '$postId'] }
+          }
+        }],
+        as: 'savedPostArray'
+      }
+    },
+    {
+      $addFields: {
+        'savedPostArray': { $size: '$savedPostArray' },
+      }
+    }
+    ];
     let userFilterObj = {};
     if (req.query.type == "mine") {
       userFilterObj = {
@@ -236,7 +276,8 @@ router.get('/', async function (req, res) {
       }, {
         $unwind: "$postdata"
       });
-    } else {
+    }
+    else {
       aggregateQuery.push({
         $lookup: {
           from: "posts",
@@ -297,6 +338,7 @@ router.get('/', async function (req, res) {
           'profilePath': 1,
           'postdata.title': 1,
           'postdata._id': 1,
+          'postdata.savedPostArray': 1,
           'postdata.description': 1,
           'postdata.postPath': 1,
           'postdata.createdOn': 1,
@@ -338,6 +380,8 @@ router.get('/', async function (req, res) {
           'profilePath': 1,
           'postdata.title': 1,
           'postdata._id': 1,
+          'postdata.savedPostArray': 1,
+
           'postdata.description': 1,
           'postdata.postPath': 1,
           'postdata.createdOn': 1,
@@ -354,8 +398,9 @@ router.get('/', async function (req, res) {
       }
     );
 
+    
     let savedPost = await savedPostModel.distinct('postId', { "userId": { $eq: req.user?._id } }, { 'postId': 1 })
-
+    
     // Final Query
     let postData = await userModel.aggregate(aggregateQuery);
 

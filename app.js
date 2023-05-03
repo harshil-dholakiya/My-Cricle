@@ -58,8 +58,8 @@ const hbs = exphbs.create({
       return null;
     },
     dateFormat: function (createdOn, format) {
-      var mmnt = moment(createdOn);
-      return mmnt.format(format);
+      var mmnt = moment(createdOn).fromNow();
+      return mmnt;
     },
     inArray: function (array, value, options) {
       array = array.map(val => {

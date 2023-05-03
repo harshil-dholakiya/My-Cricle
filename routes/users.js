@@ -152,12 +152,16 @@ router.get('/report', async function (req, res) {
 
   res.render('dashboard/report', {
     title: "Report",
-    // statisticData: statisticData,
-    totalPostsavedByUser : totalPostsavedByUser,
+    totalPostsavedByUser: totalPostsavedByUser,
     savedPostArray: savedPostArray,
     createPostArray: createPostArray,
     createOnArray: createOnArray
   })
+})
+
+router.post('/comments', async function (req, res) {
+  console.log(req.body);
+  res.send({ type: "success" })
 })
 
 module.exports = router;
