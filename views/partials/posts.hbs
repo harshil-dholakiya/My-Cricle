@@ -28,7 +28,7 @@
                                 <a href="javascript:void(0)" class="text-muted" data-title="Unsave">
                                     <div class="savedPostDiv save-post" data-id="{{_id}}">
                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="icon icon-tabler icon-tabler-heart-filled" width="24" height="24"
+                                            class="icon icon-tabler text-blue icon-tabler-heart-filled" width="24" height="24"
                                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                                             stroke-linecap="round" stroke-linejoin="round">
                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -38,19 +38,7 @@
                                         </svg>
                                     </div>
                                 </a>
-                                <a href="javascript:void(0)" data-bs-toggle="modal">
-                                    <div class="commentDiv" data-postid="{{_id}}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" style="margin-left: 10px ;"
-                                            class="icon icon-tabler icon-tabler-message-circle" width="24" height="24"
-                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                            stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path
-                                                d="M3 20l1.3 -3.9c-2.324 -3.437 -1.426 -7.872 2.1 -10.374c3.526 -2.501 8.59 -2.296 11.845 .48c3.255 2.777 3.695 7.266 1.029 10.501c-2.666 3.235 -7.615 4.215 -11.574 2.293l-4.7 1">
-                                            </path>
-                                        </svg>
-                                    </div>
-                                </a>
+
                                 {{else}}
                                 {{#compare ../_id "!=" ../../userDetails._id }}
                                 <a href="javascript:void(0)" class="text-muted" data-title="Save">
@@ -105,6 +93,21 @@
                                 </a>
                                 {{/compare}}
 
+                                <a href="javascript: void(0)" class="text-muted comment" title="Comment"
+                                    data-bs-toggle="modal" data-postid="{{_id}}" data-postimage="{{postPath}}">
+                                    <div class="commentDiv">
+                                        <svg xmlns="http://www.w3.org/2000/svg" style="margin-left: 10px ;"
+                                            class="icon icon-tabler icon-tabler-message-circle" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path
+                                                d="M3 20l1.3 -3.9c-2.324 -3.437 -1.426 -7.872 2.1 -10.374c3.526 -2.501 8.59 -2.296 11.845 .48c3.255 2.777 3.695 7.266 1.029 10.501c-2.666 3.235 -7.615 4.215 -11.574 2.293l-4.7 1">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                </a>
+
                             </div>
                         </div><br>
                         <div><span class="text-muted">Title : </span> {{title}}</div>
@@ -115,6 +118,9 @@
             </div>
         </div>
     </div><br><br>
+
+
+
     {{/each}}
     {{/each}}
 
@@ -165,6 +171,70 @@
         </a>
     </div>
     {{/if}}
+</div>
+
+{{!-- Comment Model --}}
+<div class="modal modal-blur fade" id="modal-comment" tabindex="-1" role="dialog" aria-hidden="true">
+    <form id="commentForm" enctype="multipart/form-data">
+        <input type="hidden" value="" id="hidden">
+        <div class="modal-dialog modal-lg has-error" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Comment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="postImageDiv mb-4">
+                        <img src="" alt="" id="postPhoto" width="100%" height="300px">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Comment</label>
+                        <textarea type="text" class="form-control" name="message" id="comment"
+                            placeholder="Add your comment here"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </a>
+                    <button class="btn btn-primary ms-auto commentBtn" type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M12 5l0 14" />
+                            <path d="M5 12l14 0" />
+                        </svg>
+                        Add Comment
+                    </button>
+                </div>
+                <div class="commentMessageDiv"></div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{{!-- Delete comment cofrim Model --}}
+<div class="modal modal-blur fade deleteBtn" id="modal-deleteBtn" tabindex="-1" role="dialog" aria-hidden="true">
+    <form id="commentForm" enctype="multipart/form-data">
+        <input type="hidden" value="" id="hidden">
+        <div class="modal-dialog modal-lg has-error" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Comment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-title">Are you sure?</div>
+                    <div>If you proceed, your comment will be delete permnently.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger confrimDeleteBtn" data-bs-dismiss="modal">Yes</button>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 
 <script src="/javascripts/custome-js/comment.js"></script>

@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 const userModel = require('../models/users')
 const statisticsModel = require('../models/statistics')
+const commentModel = require('../models/comments')
+
 const moment = require('moment')
 const mongoose = require('mongoose')
 const multer = require('multer')
@@ -159,9 +161,67 @@ router.get('/report', async function (req, res) {
   })
 })
 
-router.post('/comments', async function (req, res) {
-  console.log(req.body);
-  res.send({ type: "success" })
+// Get comment with who added comments on particular post
+router.get('/comments/:postId', async function (req, res) {
+  try {
+    let commentsData = await commentModel.aggregate([
+      {
+        $match: {
+          'postId': new mongoose.Types.ObjectId(req.params.postId)
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          let: {
+            userId: '$commentBy'
+          },
+          pipeline: [{
+            $match: {
+              $expr: {
+                $eq: ['$$userId', '$_id']
+              }
+            }
+          },
+          ],
+          as: 'commentByUser',
+        },
+      },
+      {
+        $unwind: '$commentByUser'
+      }
+    ])
+
+    return res.render('partials/getComments', {
+      commentsData: commentsData
+    })
+  } catch (error) {
+    console.log(error);
+    return res.send({ type: "error" })
+  }
+})
+
+// Add comment
+router.post('/comments/:postId', async function (req, res) {
+  try {
+    let { commentMessage } = req.body
+    await commentModel.create({ message: commentMessage, postId: req.params.postId, commentBy: req.user._id })
+    return res.send({ type: "success" })
+  } catch (error) {
+    console.log(error);
+    return res.send({ type: "error" })
+  }
+})
+
+// Delete Comment 
+router.delete('/delete-comment/:postId', async function (req, res) {
+  try {
+    await commentModel.deleteOne({ postId: new mongoose.Types.ObjectId(req.params.postId), commentBy: new mongoose.Types.ObjectId(req.user._id) })
+    return res.send({ type: "success" })
+  } catch (error) {
+    console.log(error);
+    return res.send({ type: "error" })
+  }
 })
 
 module.exports = router;
