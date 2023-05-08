@@ -1,4 +1,23 @@
 $(document).ready(function () {
+
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "1000",
+        "hideDuration": "1000",
+        "timeOut": "2000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+
     $('#updateUserForm').validate({
         rules: {
             firstName: {
@@ -43,9 +62,9 @@ $(document).ready(function () {
                 processData: false,
                 success: function (data) {
                     console.log(data);
-                    // console.log("success");
                     if (data.type == "success") {
-                        location.href = "/"
+                        toastr.success('Update Successfully!!');
+                        // location.href = "/"
                     }
                 },
                 error: function () {

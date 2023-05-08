@@ -6,6 +6,7 @@ const path = require('path')
 const savedPostModel = require('../models/save-post');
 const { default: mongoose } = require('mongoose');
 const { log } = require('handlebars/runtime');
+const fs = require('fs')
 
 
 const storage = multer.diskStorage({
@@ -31,8 +32,6 @@ const checkFileType = function (req, file, cb) {
         return cb(null, true);
     } else {
         req.fileValidationError = 'error';
-        // console.log(req.fileValidationError)
-        // res.send({type : 'error'})
         return cb(new Error("Error"), false);
     }
 };
@@ -51,11 +50,12 @@ router.post('/add-post', async function (req, res) {
 
         upload(req, res, async function (err) {
             try {
-                console.log("Inside Try");
                 if (req.fileValidationError) {
+                    console.log(req.fileValidationError);
                     return res.send({ type: 'error' });
                 }
                 if (err) {
+                    console.log(err);
                     return res.send({ type: 'tooLarge' });
                 }
                 else if (req.file) {
@@ -74,7 +74,7 @@ router.post('/add-post', async function (req, res) {
 
     } catch (error) {
         console.log(error)
-        res.send({ type: "error" })
+        return res.send({ type: "error" })
     }
 })
 
@@ -96,7 +96,7 @@ router.put('/savePost', async function (req, res) {
 
     } catch (error) {
         console.log(error);
-        res.send({ type: "error" })
+       return res.send({ type: "error" })
     }
 })
 
@@ -114,14 +114,14 @@ router.put('/archivePost', async function (req, res) {
 
     } catch (error) {
         console.log(error);
-        res.send({ type: "error" })
+        return res.send({ type: "error" })
     }
 })
 
 router.get('/', async function (req, res) {
     if (req.query.postId) {
         let postData = await postModel.findOne({ _id: req.query.postId }, { title: 1, description: 1, userId: 1, postPath: 1 }).lean()
-        res.send(postData)
+        return res.send(postData)
     }
 })
 
@@ -139,7 +139,17 @@ router.put('/postId', async function (req, res, next) {
 
         upload(req, res, async function (err) {
             let { editTitle, editDescription, postPath } = req.body
-            let updateQuery = { "title": editTitle, "description": editDescription }
+            let findPostpath = await postModel.findOne({ "_id": req.body.editPostId }, { 'postPath': 1 }) // find old postPath by postId
+            let oldPostPath = findPostpath.postPath
+            console.log("=========", oldPostPath);
+
+            fs.unlink('public' + `/images/posts/${oldPostPath}`, (err => {
+                if (err) console.log(err);
+                else {
+                    console.log("11111111");
+                }
+            }));
+            let updateQuery = { "title": editTitle, "description": editDescription, 'postPath': postPath }
             if (req.fileValidationError) {
                 return res.send({ type: 'error' });
             }
@@ -150,13 +160,13 @@ router.put('/postId', async function (req, res, next) {
                 updateQuery['postPath'] = req.file?.filename
             }
             req.body.postPath = req.file?.filename
-            
+
             await postModel.updateOne({ "_id": req.body.editPostId }, { $set: updateQuery })
             return res.send({ type: "success" })
         });
     } catch (error) {
         console.log(error)
-        res.send({ type: "error" })
+        return res.send({ type: "error" })
     }
 })
 

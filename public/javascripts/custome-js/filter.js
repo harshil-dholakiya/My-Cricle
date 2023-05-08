@@ -32,6 +32,7 @@ $(document).off('click', '.savedPost').on('click', '.savedPost', function () {
         url += `&search=${$('.rounded').val()}`
     }
     $this = $(this)
+    
     $.ajax({
         type: "GET",
         url: `${url}`,
@@ -50,7 +51,11 @@ $(document).off('keyup', '.rounded').on('keyup', '.rounded', function () {
     serachValue.trim()
 
     let url = `/?search=${serachValue}`
+    if ($('.savePost').val()) {
+        url += `${$('.savePost').val()}`
+    }
 
+    console.log(url);
     if ($('.sortType').val()) {
         url += `&${$('.sortType').val()}`
     }

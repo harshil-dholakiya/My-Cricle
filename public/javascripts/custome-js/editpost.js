@@ -42,15 +42,13 @@ $(document).ready(function () {
         submitHandler: function (form) {
             var form = $('form#editPostForm')[0];
             var formData = new FormData(form);
-            // formData.append('fileUpload', $('input[type=file]')[0].files[0]);
             $.ajax({
-                type: "PUT",    
+                type: "PUT",
                 data: formData,
                 processData: false,
                 contentType: false,
                 url: `posts/postId`,
                 success: function (data) {
-                    console.log(data);
                     if (data.type == 'tooLarge') {
                         $("#postImage").css("border", 'solid 1px red');
                         $(`.fileSizeValidator`).css('display', '')

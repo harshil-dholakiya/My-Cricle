@@ -9,6 +9,10 @@ const moment = require('moment');
 // const { response } = require('./app');
 
 async function aggregateCron(userIds) {
+    /**function for login user
+         * @param {ObjectId} userId  takes an userId 
+         * @return {Object} return totalSavedPost, totalPostOfUser, how much post he saved 
+         */
     var statisticsData = await userModel.aggregate([
         {
             $match: {
@@ -83,6 +87,7 @@ async function aggregateCron(userIds) {
     for (const users of userSavedPost) {
         var post = users.totalSavedPost
     }
+    
     let count = 0
     for (let user of statisticsData[0].totalPostOfUser) {
         if (user.totalSavedPost > 0) {
@@ -107,7 +112,8 @@ async function userDetails() {
 }
 
 const job = new CronJob(
-    '*/30 * * * *',
+    // at every Midnight
+    '0 0 * * *',
     function () {
         userDetails()
     },

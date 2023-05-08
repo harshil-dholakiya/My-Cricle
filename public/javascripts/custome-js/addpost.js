@@ -1,4 +1,22 @@
 $(document).ready(function () {
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "1000",
+        "hideDuration": "1000",
+        "timeOut": "2000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+
     $('#addPostForm').validate({
         rules: {
             title: {
@@ -47,7 +65,9 @@ $(document).ready(function () {
                         $(`.fileSizeValidator`).css('display', '')
                     }
                     if (data.type == "success") {
-                        location.href = "/"
+                        toastr.success('Post Added Successfully !!');
+                        $('#modal-report').modal('hide')
+
                     }
                 },
                 error: function () {
@@ -57,4 +77,7 @@ $(document).ready(function () {
     })
 });
 
-
+const socket = io("http://localhost:4000");
+socket.on('connectToRoom',function(){
+    // console.log(socket.id)
+ });

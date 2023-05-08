@@ -117,7 +117,6 @@ router.get('/', async function (req, res) {
     }
 
     if (req.query.sortField && req.query.sortOrder) {
-      console.log("req.query.sortOrder", req.query.sortOrder);
       let sortStage = {
         "$sort": {
         }
@@ -249,7 +248,6 @@ router.get('/', async function (req, res) {
     }
 
     if (req.query.savedPost == "savedPost") {
-      console.log(111111111111);
       let savedPostIds = await savedPostModel.distinct("postId", { userId: req.user._id });
       let savedPostUserIds = await postModel.distinct("userId", { _id: { $in: savedPostIds } });
 
@@ -270,7 +268,7 @@ router.get('/', async function (req, res) {
           pipeline: [{
             $match: {
               $and: [{ $expr: { $eq: ['$$userId', '$userId'] } }, { 'isArchive': false }, { _id: { $in: savedPostIds } }]
-            }
+            },
           }],
           as: 'postdata'
         }
@@ -399,14 +397,12 @@ router.get('/', async function (req, res) {
       }
     );
 
-    
+
     let savedPost = await savedPostModel.distinct('postId', { "userId": { $eq: req.user?._id } }, { 'postId': 1 })
-    
+
     // Final Query
     let postData = await userModel.aggregate(aggregateQuery);
 
-    console.log(postData);
-    
     if (req.xhr) {
       return res.render('partials/posts', {
         title: 'My Cricle',

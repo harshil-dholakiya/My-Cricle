@@ -14,7 +14,6 @@ const { log } = require('handlebars/runtime');
 router.get('/editProfile', async function (req, res, next) {
   try {
     let userData = await userModel.findOne({ "_id": req.user._id }, { 'firstName': 1, "lastName": 1, "email": 1, 'gender': 1, 'profilePath': 1 }).lean()
-    console.log("userData======>", userData);
     return res.render('editProfile/editProfile', {
       title: "Edit Profile",
       userData: userData
@@ -34,7 +33,6 @@ const storage = multer.diskStorage({
       + path.extname(file.originalname))
   }
 });
-
 
 const checkFileType = function (file, cb) {
   //Allowed file extensions
@@ -59,10 +57,10 @@ const upload = multer({
   },
 });
 
-router.post('/updateUser', upload.single("fileUpload"), async function (req, res) {
+router.post('/updateUser', upload.single("userProfile"), async function (req, res) {
   try {
     req.body.profilePath = req.file?.filename
-    let { firstName, lastName, email, gender, profilePath } = req.body
+    let { firstName, lastName, gender, profilePath } = req.body
     await userModel.updateOne({ _id: new mongoose.Types.ObjectId(req.user._id) }, { $set: { "firstName": firstName, "lastName": lastName, "gender": gender, "profilePath": profilePath } });
     return res.send({ type: "success" })
   } catch (error) {

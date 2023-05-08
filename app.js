@@ -25,19 +25,19 @@ const fs = require('fs')
 const nodemailer = require('nodemailer');
 
 
-// fs.mkdir(path.join(__dirname, ''), (err) => {
-//   if (err) {
-//     return console.error(err);
-//   }
-//   console.log('Directory created successfully!');
-// });
+fs.mkdir(path.join(__dirname, '/public/images/posts'), (err) => {
+  if (err) {
+    return console.log("Post Directory already exists");
+  }
+  console.log('Directory created successfully!');
+});
 
-// fs.mkdir(path.join(__dirname, '/public/images/users'), (err) => {
-//   if (err) {
-//     return console.error(err);
-//   }
-//   console.log('Directory created successfully!');
-// });
+fs.mkdir(path.join(__dirname, '/public/images/users'), (err) => {
+  if (err) {
+    return console.log("users Directory already exists");
+  }
+  console.log('Directory created successfully!');
+});
 
 try {
   mongoose.connect(process.env.connectionString)
@@ -47,6 +47,19 @@ try {
 }
 
 var app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server, {
+  cors: {
+    origin: '*',
+  }
+});
+
+io.on("connection", (socket) => {
+  socket.join("room");
+  io.sockets.in("room").emit('connectToRoom', "You are in room no. ")
+});
+server.listen(4000);
+
 const hbs = exphbs.create({
   defaultLayout: 'main',
   extname: '.hbs',
