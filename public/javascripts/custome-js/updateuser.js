@@ -34,7 +34,7 @@ $(document).ready(function () {
         submitHandler: function (form) {
             var form = $('form')[0];
             const formData = new FormData(form);
-            formData.append('fileUpload', $('input[type=file]')[0].files[0]);
+            formData.append('userProfile', $('input[type=file]')[0].files[0]);
             $.ajax({
                 url: '/users/updateUser',
                 type: 'post',

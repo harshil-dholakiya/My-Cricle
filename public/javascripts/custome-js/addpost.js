@@ -29,7 +29,7 @@ $(document).ready(function () {
         },
 
         submitHandler: function (form) {
-            var form = $('form')[0];
+            var form = $('form#addPostForm')[0];
             var formData = new FormData(form);
             $.ajax({
                 url: '/posts/add-post',
@@ -38,14 +38,13 @@ $(document).ready(function () {
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    console.log("data",data)
                     if (data.type == "error") {
                         $("#postImage").css("border", 'solid 1px red');
-                        $(`.toggle`).css('display' , '')
+                        $(`.toggle`).css('display', '')
                     }
                     if (data.type == "tooLarge") {
                         $("#postImage").css("border", 'solid 1px red');
-                        $(`.fileSizeValidator`).css('display' , '')
+                        $(`.fileSizeValidator`).css('display', '')
                     }
                     if (data.type == "success") {
                         location.href = "/"

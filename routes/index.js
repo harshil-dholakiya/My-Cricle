@@ -249,6 +249,7 @@ router.get('/', async function (req, res) {
     }
 
     if (req.query.savedPost == "savedPost") {
+      console.log(111111111111);
       let savedPostIds = await savedPostModel.distinct("postId", { userId: req.user._id });
       let savedPostUserIds = await postModel.distinct("userId", { _id: { $in: savedPostIds } });
 
@@ -314,7 +315,7 @@ router.get('/', async function (req, res) {
       req.query.pageValue = 1
     }
 
-    let limit = 5
+    let limit = 6
     const totalRecords = page;
     const totalPages = Math.ceil(totalRecords / limit);
     const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
@@ -404,6 +405,8 @@ router.get('/', async function (req, res) {
     // Final Query
     let postData = await userModel.aggregate(aggregateQuery);
 
+    console.log(postData);
+    
     if (req.xhr) {
       return res.render('partials/posts', {
         title: 'My Cricle',

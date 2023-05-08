@@ -66,9 +66,7 @@
                 Report
               </span>
             </div>
-
             <div class="btn-list">
-
               <span class="d-none d-sm-inline">
                 <a href="/users/userList" class="btn sort" data-sort="title">
                   All Users
@@ -79,6 +77,7 @@
                 <a href="javascript:void(0)" class="btn savedPost">
                   Saved Post
                 </a>
+                <input type="hidden" value="" class="savePost">
               </span>
 
               <a href="" class="btn btn-primary d-none d-sm-inline-block" data-bs-toggle="modal"
@@ -107,7 +106,7 @@
       </div>
       <div class="reportDiv"></div>
     </div>
-    <div class="col-12 mt-3 bodyDiv">
+    <div class="container bodyDiv">
       {{>posts}}
     </div>
   </div>
@@ -157,6 +156,7 @@
   </div>
   </div>
 
+  {{!-- Add Post Model --}}
   <div class="modal modal-blur fade" id="modal-report" tabindex="-1" role="dialog" aria-hidden="true">
     <form action="/posts/add-post" method="post" id="addPostForm" enctype="multipart/form-data">
       <div class="modal-dialog modal-lg has-error" role="document">
@@ -234,7 +234,6 @@
                 <img class="avatar avatar-xl postImage" src=""></img>
               </div>
               <div class="col-auto">
-                Change avatar
                 <input type="file" id="fileUpload" name="file">
               </div>
             </div>
@@ -244,16 +243,12 @@
 
           </div>
 
-          {{!-- --}}
-
           <div class="fileSizeValidator" style="display: none; color:brown">
             File size mst be lessthan 2Mb
           </div>
           <div class="toggle" style="display: none; color:brown">
             Only png,jpg,jpeg,gif allowed
           </div>
-
-          {{!-- --}}
 
           <div class="modal-footer">
             <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
@@ -273,6 +268,8 @@
       </div>
     </form>
   </div>
+
+  
 </body>
 
 </html>

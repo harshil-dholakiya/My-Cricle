@@ -6,6 +6,7 @@ $(document).off('keyup', '#searchBarValue').on('keyup', '#searchBarValue', funct
             type: "GET",
             url: `/users/userList/?search=${serachValue}`,
             success: function (data) {
+                $(".bodyDiv").empty()
                 $(".bodyDiv").html(data)
             },
             error: function (data) {

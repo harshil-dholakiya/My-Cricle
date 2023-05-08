@@ -25,19 +25,19 @@ const fs = require('fs')
 const nodemailer = require('nodemailer');
 
 
-fs.mkdir(path.join(__dirname, ''), (err) => {
-  if (err) {
-    return console.error(err);
-  }
-  console.log('Directory created successfully!');
-});
+// fs.mkdir(path.join(__dirname, ''), (err) => {
+//   if (err) {
+//     return console.error(err);
+//   }
+//   console.log('Directory created successfully!');
+// });
 
-fs.mkdir(path.join(__dirname, '/public/images/users'), (err) => {
-  if (err) {
-    return console.error(err);
-  }
-  console.log('Directory created successfully!');
-});
+// fs.mkdir(path.join(__dirname, '/public/images/users'), (err) => {
+//   if (err) {
+//     return console.error(err);
+//   }
+//   console.log('Directory created successfully!');
+// });
 
 try {
   mongoose.connect(process.env.connectionString)

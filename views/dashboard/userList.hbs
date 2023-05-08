@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -29,19 +30,11 @@
         <!-- Navbar -->
 
         <div class="row g-2 align-items-center mt-3">
-            <div class="col">
-                <!-- Page pre-title -->
-                <div class="page-pretitle">
-                    {{userDetails.firstName}}
-                </div>
-                <h2 class="page-title">
-                    {{userDetails.lastName}}
-                </h2>
-            </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
                     <div class="input-group" style="width : 500px; margin-left: 320px">
-                        <input type="search" class="form-control userSearch" id="searchBarValue" placeholder="Search by FirstName LastName Email" aria-label="Search"
+                        <input type="search" class="form-control userSearch" id="searchBarValue"
+                            placeholder="Search by FirstName LastName Email" aria-label="Search"
                             aria-describedby="search-addon">
                     </div>
                     <span class="d-none d-sm-inline">
@@ -49,39 +42,24 @@
                             Go back
                         </a>
                     </span>
-                    <li class="nav-item dropdown ">
-                        <a class="nav-link dropdown-toggle " href="#navbar-base" data-bs-toggle="dropdown"
-                            data-bs-auto-close="outside" role="button" aria-expanded="false">
-                            <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-app-window"
-                                    width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <path
-                                        d="M3 5m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z">
-                                    </path>
-                                    <path d="M6 8h.01"></path>
-                                    <path d="M9 8h.01"></path>
-                                </svg>
-                            </span>
-                            <span class="nav-link-title  ">
-                                SortBy
-                            </span>
+
+                    <div class="btn-list nav-item dropdown">
+                        <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown"
+                            aria-label="Open user menu">
+                            <span>Sort By</span>
                         </a>
-                        <div class="dropdown-menu">
-                            <div class="dropdown-menu-columns">
-                                <div class="dropdown-menu-column">
-                                    <a class="dropdown-item postSort" href="javascript:void(0)" id="dateSort"
-                                        data-id="sortbyDate" data-sort-order="1">
-                                        <b>Registration Date</b>
-                                    </a>
-                                </div>
-                            </div>
+                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                            <a class="dropdown-item postSort btn" href="javascript:void(0)" id="dateSort"
+                                data-id="sortbyDate" data-sort-order="1">
+                                <b>Registration Date</b>
+                            </a>
                         </div>
-                    </li>
+                    </div>
+
+                    {{!-- --}}
                 </div>
             </div>
-            <div class="container-fluid bodyDiv" style="margin-top: 50px; margin-left : 500px">
+            <div class="container-fluid bodyDiv" style="margin-top: 50px;">
                 {{> userList}}
             </div>
             <footer class="footer footer-transparent d-print-none">
@@ -131,4 +109,5 @@
             </footer>
         </div>
 </body>
+
 </html>

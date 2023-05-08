@@ -50,20 +50,25 @@ router.post('/add-post', async function (req, res) {
         }).single('postImage');
 
         upload(req, res, async function (err) {
-            if (req.fileValidationError) {
-                return res.send({ type: 'error' });
-            }
-            if (err) {
-                return res.send({ type: 'tooLarge' });
-            }
-            else if (req.file) {
-                req.body.postPath = req.file.filename
-                let { title, description, postPath } = req.body
-                await postModel.create({
-                    title, description, postPath,
-                    userId: req.user._id
-                })
-                return res.send({ type: "success" })
+            try {
+                console.log("Inside Try");
+                if (req.fileValidationError) {
+                    return res.send({ type: 'error' });
+                }
+                if (err) {
+                    return res.send({ type: 'tooLarge' });
+                }
+                else if (req.file) {
+                    req.body.postPath = req.file.filename
+                    let { title, description, postPath } = req.body
+                    await postModel.create({
+                        title, description, postPath,
+                        userId: req.user._id
+                    })
+                    return res.send({ type: "success" })
+                }
+            } catch (error) {
+                console.log(error);
             }
         });
 
@@ -99,11 +104,11 @@ router.put('/archivePost', async function (req, res) {
     try {
         let query = { isArchive: false }
         const postId = req.body.postId
-        
+
         const userId = req.user._id
         if (req.body.archiveOrNot == "unarchive") {
             query = { isArchive: true }
-        }   
+        }
         await postModel.updateOne({ _id: postId, userId: userId }, { $set: { ...query } })
         return res.send({ type: "success" })
 
@@ -121,6 +126,7 @@ router.get('/', async function (req, res) {
 })
 
 router.put('/postId', async function (req, res, next) {
+
     try {
         let maxSize = 2000000;
         const upload = multer({
@@ -132,6 +138,8 @@ router.put('/postId', async function (req, res, next) {
         }).single('file');
 
         upload(req, res, async function (err) {
+            let { editTitle, editDescription, postPath } = req.body
+            let updateQuery = { "title": editTitle, "description": editDescription }
             if (req.fileValidationError) {
                 return res.send({ type: 'error' });
             }
@@ -139,10 +147,12 @@ router.put('/postId', async function (req, res, next) {
                 return res.send({ type: 'tooLarge' });
             }
             else if (req.file) {
-                let fileName = req.file?.filename
-                await postModel.updateOne({ "_id": req.body.editPostId }, { $set: { title: req.body.editTitle, description: req.body.editDescription, postPath: fileName } })
-                return res.send({ type: "success" })
+                updateQuery['postPath'] = req.file?.filename
             }
+            req.body.postPath = req.file?.filename
+            
+            await postModel.updateOne({ "_id": req.body.editPostId }, { $set: updateQuery })
+            return res.send({ type: "success" })
         });
     } catch (error) {
         console.log(error)

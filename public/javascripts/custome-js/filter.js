@@ -15,6 +15,7 @@ $(document).off('change', '.filter').on('change', '.filter', function () {
         type: "GET",
         url: `${url}`,
         success: function (data) {
+            $(".bodyDiv").empty()
             $(".bodyDiv").html(data)
             $this.next().val(`type=${filterType}`)
         },
@@ -25,11 +26,18 @@ $(document).off('change', '.filter').on('change', '.filter', function () {
 });
 
 $(document).off('click', '.savedPost').on('click', '.savedPost', function () {
+
+    let url = `/?savedPost=savedPost`
+    if ($('.rounded').val()) {
+        url += `&search=${$('.rounded').val()}`
+    }
+    $this = $(this)
     $.ajax({
         type: "GET",
-        url: `/?savedPost=savedPost`,
+        url: `${url}`,
         success: function (data) {
             $(".bodyDiv").html(data)
+            $this.next().val(`/?savedPost=savedPost`)
         },
         error: function (data) {
             alert("Error from on click")
@@ -47,18 +55,24 @@ $(document).off('keyup', '.rounded').on('keyup', '.rounded', function () {
         url += `&${$('.sortType').val()}`
     }
 
+    if ($('.savedPost').val()) {
+        url += `&${$('.savedPost').val()}`
+    }
+
     if ($('.type').val()) {
         url += `&${$('.type').val()}`
     }
+    console.log(url);
     $this = $(this)
-        $.ajax({
-            type: "GET",
-            url: `${url}`,
-            success: function (data) {
-                $(".bodyDiv").html(data)
-            },
-            error: function (data) {
-                alert("Error from Search")
-            }
-        })
+    $.ajax({
+        type: "GET",
+        url: `${url}`,
+        success: function (data) {
+            $(".bodyDiv").empty()
+            $(".bodyDiv").html(data)
+        },
+        error: function (data) {
+            alert("Error from Search")
+        }
+    })
 });

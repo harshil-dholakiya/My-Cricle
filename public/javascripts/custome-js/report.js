@@ -3,6 +3,7 @@ $(document).off('click', '.report').on('click', '.report', function () {
         type: "GET",
         url: `users/report`,
         success: function (data) {
+            $(".bodyDiv").empty()
             $(".bodyDiv").html(data)
         },
         error: function (data) {

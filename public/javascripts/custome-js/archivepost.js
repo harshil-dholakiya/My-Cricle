@@ -1,6 +1,5 @@
 $(document).ready(function () {
-    // $(".archivePostDiv").on('click', function () {
-        $(document).off("click", ".archivePostDiv").on('click', ".archivePostDiv", function () {
+    $(document).off("click", ".archivePostDiv").on('click', ".archivePostDiv", function () {
         let archiveOrNot = $(this).parent().data('archive')
         let $this = $(this);
         let postId = $(this).data("id")
@@ -25,6 +24,7 @@ $(document).ready(function () {
                     `).parent().data('unarchive', 'archive')
                     if (data.type == "success") {
                         $this.closest(".grandParent").hide()
+                        location.reload();
                     }
                 },
                 error: function (data) {
@@ -32,36 +32,5 @@ $(document).ready(function () {
                 }
             });
         }
-        // if (archiveOrNot == "archive") {
-        //     $.ajax({
-        //         url: '/posts/archivePost',
-        //         type: 'put',
-        //         data: {
-        //             "postId": postId,
-        //             "archiveOrNot": archiveOrNot
-        //         },
-        //         success: function (data) {
-        //             $this.html(`
-        //             <svg xmlns="http://www.w3.org/2000/svg"
-        //             class="icon icon-tabler icon-tabler-exposure" width="24" height="24"
-        //             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-        //             stroke-linecap="round" stroke-linejoin="round">
-        //             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        //             <path
-        //             d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z">
-        //             </path>
-        //             <path d="M4.6 19.4l14.8 -14.8"></path>
-        //             <path d="M7 9h4m-2 -2v4"></path>
-        //             <path d="M13 16l4 0"></path>
-        //             </svg>
-        //             `).parent().data('archive', 'unarchive')
-        //             location.href = '/'
-
-        //         },
-        //         error: function (data) {
-        //             alert("error From archivePost")
-        //         }
-        //     });
-        // }
     })
 })
