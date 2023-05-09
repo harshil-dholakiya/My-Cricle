@@ -55,7 +55,6 @@ $(document).off('keyup', '.rounded').on('keyup', '.rounded', function () {
         url += `${$('.savePost').val()}`
     }
 
-    console.log(url);
     if ($('.sortType').val()) {
         url += `&${$('.sortType').val()}`
     }
@@ -67,7 +66,6 @@ $(document).off('keyup', '.rounded').on('keyup', '.rounded', function () {
     if ($('.type').val()) {
         url += `&${$('.type').val()}`
     }
-    console.log(url);
     $this = $(this)
     $.ajax({
         type: "GET",

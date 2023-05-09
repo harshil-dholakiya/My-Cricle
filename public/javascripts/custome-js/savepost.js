@@ -1,7 +1,38 @@
 $(document).ready(function () {
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "1000",
+        "hideDuration": "1000",
+        "timeOut": "1000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+    const loginUserId = $("#loginUserId").data('login-user-id')
+    const socket = io({ query: `userId=${loginUserId}` });
+
+    socket.on('connectToRoom', function (data) {
+        console.log(data, `${loginUserId}`);
+    });
+
+    socket.on('newNotification', function (data) {
+        toastr.info(`${data}`);
+    });
+
+    socket.on('savedPostCount', function (data) {
+        
+    });
+
     $(document).off("click", ".save-post").on('click', ".save-post", function () {
         let title = $(this).parent().data('title')
-        // let savedPostCount = $(this).parents('.card-body').find(".savedPostCountClass").html()
         let $this = $(this);
         let postId = $(this).data("id")
         if (title == "Save") {
@@ -19,7 +50,9 @@ $(document).ready(function () {
                     <path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z" stroke-width="0" fill="currentColor"></path>
                     </svg>
                     `).parent().data('title', 'Unsave')
+
                     $($this).parents('.card-body').find(".savedPostCountClass").html(Number($($this).parents('.card-body').find(".savedPostCountClass").html()) + 1)
+
                     if (data.type == "error") {
                         location.href = '/sign-in'
                     }

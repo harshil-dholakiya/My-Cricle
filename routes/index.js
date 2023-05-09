@@ -45,6 +45,7 @@ router.post('/sign-in', async function (req, res, next) {
       //   req.flash('verify' , 'Please Verify your email')
       //   res.redirect('/sign-in')
       // }
+
     });
   })(req, res, next);
 });
@@ -380,7 +381,6 @@ router.get('/', async function (req, res) {
           'postdata.title': 1,
           'postdata._id': 1,
           'postdata.savedPostArray': 1,
-
           'postdata.description': 1,
           'postdata.postPath': 1,
           'postdata.createdOn': 1,
@@ -397,11 +397,18 @@ router.get('/', async function (req, res) {
       }
     );
 
-
     let savedPost = await savedPostModel.distinct('postId', { "userId": { $eq: req.user?._id } }, { 'postId': 1 })
 
     // Final Query
     let postData = await userModel.aggregate(aggregateQuery);
+
+    for (let i = 0; i < postData.length; i++) {
+      const element = postData[i];
+      for (let index = 0; index <  element.postdata.length; index++) {
+        io.emit("savedPostCount", `${element.postdata[index].savedPostArray}`)
+        element.postdata[index].savedPostArray
+      }
+    }
 
     if (req.xhr) {
       return res.render('partials/posts', {

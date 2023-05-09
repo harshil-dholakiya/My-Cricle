@@ -4,9 +4,11 @@ const router = express.Router();
 const multer = require('multer')
 const path = require('path')
 const savedPostModel = require('../models/save-post');
+const userModel = require('../models/users');
 const { default: mongoose } = require('mongoose');
 const { log } = require('handlebars/runtime');
-const fs = require('fs')
+const fs = require('fs');
+const socket = require('../helpers/socket');
 
 
 const storage = multer.diskStorage({
@@ -85,6 +87,62 @@ router.put('/savePost', async function (req, res) {
         if (req.body.title == "Save") {
             const postId = req.body.postId
             const userId = req.user._id
+
+            // to find the user name who saved the post
+            // let savedPostUserDetail = await postModel.aggregate([{
+            //     $lookup: {
+            //         from: 'savedPost',
+            //         let: {
+            //             postId: '$_id',
+            //         },
+            //         pipeline: [{
+            //             $match: {
+            //                 $expr: {
+            //                     $eq: ['$$postId', '$postId']
+            //                 }
+            //             }
+            //         },
+            //         {
+            //             $lookup: {
+            //                 from: 'users',
+            //                 let: {
+            //                     userId: '$userId',
+            //                 },
+            //                 pipeline: [{
+            //                     $match: {
+            //                         $expr: {
+            //                             $eq: ['$$userId', '$_id']
+            //                         }
+            //                     }
+            //                 }],
+            //                 as: "user",
+            //             },
+            //         },
+            //         {
+            //             $unwind: '$user'
+            //         },
+            //         {
+            //             $replaceRoot: {
+            //                 newRoot: "$user"
+            //             }
+            //         }
+            //         ],
+            //         as: 'savedPostuserDetail'
+            //     },
+            // }, {
+            //     $project: {
+            //         'userId' : 1,
+            //         "savedPostuserDetail._id": 1,
+            //         "savedPostuserDetail.firstName": 1,
+            //         "savedPostuserDetail.lastName": 1
+            //     }
+            // }
+            // ])
+            let postUserId = await postModel.findOne({ _id: postId }, { _id: 0, userId: 1 })
+            let likedPostUserDetail = await userModel.findOne({ _id: userId }, { firstName: 1, lastName: 1 }).lean()
+
+            io.to(postUserId.userId.toString()).emit("newNotification", `${likedPostUserDetail.firstName} ${likedPostUserDetail.lastName} liked your post`)
+
             await savedPostModel.create({ postId: postId, userId: userId })
             return res.send({ type: "success" })
         }
@@ -96,7 +154,7 @@ router.put('/savePost', async function (req, res) {
 
     } catch (error) {
         console.log(error);
-       return res.send({ type: "error" })
+        return res.send({ type: "error" })
     }
 })
 

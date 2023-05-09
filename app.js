@@ -47,18 +47,7 @@ try {
 }
 
 var app = express();
-const server = require('http').createServer(app);
-const io = require('socket.io')(server, {
-  cors: {
-    origin: '*',
-  }
-});
 
-io.on("connection", (socket) => {
-  socket.join("room");
-  io.sockets.in("room").emit('connectToRoom', "You are in room no. ")
-});
-server.listen(4000);
 
 const hbs = exphbs.create({
   defaultLayout: 'main',

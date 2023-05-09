@@ -67,7 +67,6 @@ $(document).ready(function () {
                     if (data.type == "success") {
                         toastr.success('Post Added Successfully !!');
                         $('#modal-report').modal('hide')
-
                     }
                 },
                 error: function () {
@@ -77,7 +76,3 @@ $(document).ready(function () {
     })
 });
 
-const socket = io("http://localhost:4000");
-socket.on('connectToRoom',function(){
-    // console.log(socket.id)
- });
