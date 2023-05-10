@@ -3,6 +3,7 @@ const router = express.Router();
 const userModel = require('../models/users')
 const postModel = require('../models/posts')
 const savedPostModel = require('../models/save-post')
+const notificationModel = require('../models/notifications');
 const md5 = require('md5');
 const passport = require('passport');
 const mongoose = require('mongoose')
@@ -33,11 +34,11 @@ router.post('/sign-in', async function (req, res, next) {
       req.flash('error', 'Please provide valid login details')
       return res.redirect('/sign-in');
     }
-    req.logIn(user, function (err) {
+    req.logIn(user, async function (err) {
       if (err) {
         return next(err);
       }
-      return res.redirect('/');
+      res.redirect('/');
 
       // if (user.isVerified == true) {
       //   return res.redirect('/');
@@ -402,12 +403,11 @@ router.get('/', async function (req, res) {
     // Final Query
     let postData = await userModel.aggregate(aggregateQuery);
 
-    for (let i = 0; i < postData.length; i++) {
-      const element = postData[i];
-      for (let index = 0; index <  element.postdata.length; index++) {
-        io.emit("savedPostCount", `${element.postdata[index].savedPostArray}`)
-        element.postdata[index].savedPostArray
-      }
+    try {
+      var notificationData = await notificationModel.find({ postOwnerId: req.user._id, isSeen: false }).sort({ createdOn: -1 }).lean()
+      var notificationCount = notificationData.length
+    } catch (error) {
+      console.log(error);
     }
 
     if (req.xhr) {
@@ -422,6 +422,8 @@ router.get('/', async function (req, res) {
       return res.render('dashboard/index', {
         title: 'My Cricle',
         postData: postData,
+        notificationData : notificationData,
+        notificationCount: notificationCount,
         savedPost: savedPost,
         pages: pages
       })
@@ -509,5 +511,17 @@ router.get('/logout', function (req, res, next) {
     console.log(error);
   }
 });
+
+// router.get('/notification', async function (req, res) {
+//   try {
+//       let notificationData = await notificationModel.find({ postOwnerId: req.user._id , isSeen : false }).sort({ createdOn : -1 }).lean()
+//       return res.render('partials/notification', {
+//           notificationData: notificationData
+//       })
+//   } catch (error) {
+//       console.log(error);
+//   }
+// })
+
 
 module.exports = router;

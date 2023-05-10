@@ -19,7 +19,7 @@
                         <td>{{commentByUser.firstName}} {{commentByUser.lastName}}</td>
                         <td>{{message}}
                             {{#compare ../userDetails._id "==" commentByUser._id}}
-                            <a href="javascript:void(0)" class="text-muted deleteComment" data-title="deleteComment">
+                            <a href="javascript:void(0)" class="text-danger deleteComment" data-title="deleteComment">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     class="bi bi-trash" viewBox="0 0 16 16">
                                     <path

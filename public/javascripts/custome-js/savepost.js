@@ -28,7 +28,10 @@ $(document).ready(function () {
     });
 
     socket.on('savedPostCount', function (data) {
-        
+        data = JSON.parse(data);
+        for (const [key, value] of Object.entries(data)) {
+            $(`#${key}`).parents('.card-body').find(".savedPostCountClass").html(value)
+        }
     });
 
     $(document).off("click", ".save-post").on('click', ".save-post", function () {
@@ -50,7 +53,6 @@ $(document).ready(function () {
                     <path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z" stroke-width="0" fill="currentColor"></path>
                     </svg>
                     `).parent().data('title', 'Unsave')
-
                     $($this).parents('.card-body').find(".savedPostCountClass").html(Number($($this).parents('.card-body').find(".savedPostCountClass").html()) + 1)
 
                     if (data.type == "error") {

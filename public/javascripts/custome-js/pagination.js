@@ -18,7 +18,6 @@ $(document).off('click', '.pages').on('click', '.pages', function () {
         type: "GET",
         url: `${url}`,
         success: function (data) {
-            console.log(pageValue);
             $(".bodyDiv").empty()
             $(".bodyDiv").html(data)
         },
