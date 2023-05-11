@@ -25,19 +25,7 @@ const fs = require('fs')
 const nodemailer = require('nodemailer');
 
 
-fs.mkdir(path.join(__dirname, '/public/images/posts'), (err) => {
-  if (err) {
-    return console.log("Post Directory already exists");
-  }
-  console.log('Directory created successfully!');
-});
 
-fs.mkdir(path.join(__dirname, '/public/images/users'), (err) => {
-  if (err) {
-    return console.log("users Directory already exists");
-  }
-  console.log('Directory created successfully!');
-});
 
 try {
   mongoose.connect(process.env.connectionString)
@@ -160,6 +148,20 @@ require('./helpers/auth').commonMiddileware(app);
 app.engine('hbs', hbs.engine)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+
+fs.mkdir(path.join(__dirname, 'public/images/posts'), (err) => {
+  if (err) {
+    return console.log("Post Directory already exists");
+  }
+  console.log('Directory created successfully!');
+});
+
+fs.mkdir(path.join(__dirname, 'public/images/users'), (err) => {
+  if (err) {
+    return console.log("users Directory already exists");
+  }
+  console.log('Directory created successfully!');
+});
 
 app.use(logger('dev'));
 app.use(express.json());

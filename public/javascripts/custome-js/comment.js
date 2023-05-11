@@ -50,15 +50,17 @@ $(document).off("click", '.comment').on('click', '.comment', function () {
 
 $(document).off("click", '.deleteComment').on('click', '.deleteComment', function () {
     $('#modal-deleteBtn').modal('toggle')
+    $deleteComment = $(this)
     $(".confrimDeleteBtn").off("click").on('click', function () {
-        console.log("clicked");
         let postId = $('#modal-comment').find('#hidden').val()
-        $this = $(".deleteComment")
+        // console.log($(this).closest('tr'))
+        // $this = 
         $.ajax({
             url: `/users/delete-comment/${postId}`,
             type: 'delete',
             success: function (data) {
-                $this.closest('tr').remove()
+                // console.log($this)
+                $deleteComment.closest('tr').remove()
             },
             error: function () {
             }
