@@ -15,7 +15,7 @@ $(document).off('change', '.filter').on('change', '.filter', function () {
         type: "GET",
         url: `${url}`,
         success: function (data) {
-            $(".bodyDiv").empty()
+            // $(".bodyDiv").empty()
             $(".bodyDiv").html(data)
             $this.next().val(`type=${filterType}`)
         },
@@ -38,7 +38,7 @@ $(document).off('click', '.savedPost').on('click', '.savedPost', function () {
         url: `${url}`,
         success: function (data) {
             $(".bodyDiv").html(data)
-            $this.next().val(`/?savedPost=savedPost`)
+            $this.next().val(`&savedPost=savedPost`)
         },
         error: function (data) {
             alert("Error from on click")
@@ -71,7 +71,7 @@ $(document).off('keyup', '.rounded').on('keyup', '.rounded', function () {
         type: "GET",
         url: `${url}`,
         success: function (data) {
-            $(".bodyDiv").empty()
+            // $(".bodyDiv").empty()
             $(".bodyDiv").html(data)
         },
         error: function (data) {

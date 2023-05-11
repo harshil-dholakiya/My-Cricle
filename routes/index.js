@@ -67,6 +67,7 @@ router.get('/sign-up', function (req, res, next) {
 
 // Dashboard View
 router.get('/', async function (req, res) {
+  console.log(req.query);
   try {
     if (req.isAuthenticated()) {
       const loginUserData = await userModel.findOne({ "_id": req.user._id }, { 'email': 1, "firstName": 1, "lastName": 1, "profilePath": 1 }).lean()
@@ -403,13 +404,6 @@ router.get('/', async function (req, res) {
     // Final Query
     let postData = await userModel.aggregate(aggregateQuery);
 
-    try {
-      var notificationData = await notificationModel.find({ postOwnerId: req.user._id, isSeen: false }).sort({ createdOn: -1 }).lean()
-      var notificationCount = notificationData.length
-    } catch (error) {
-      console.log(error);
-    }
-
     if (req.xhr) {
       return res.render('partials/posts', {
         title: 'My Cricle',
@@ -419,10 +413,21 @@ router.get('/', async function (req, res) {
       })
     }
     else {
+
+      try {
+        var notificationData = await notificationModel.find({ postOwnerId: req.user._id, isSeen: false }).sort({ createdOn: -1 }).lean()
+        var notificationCount = notificationData.length
+  
+        io.to(req.user._id.toString()).emit("notificationCount", JSON.stringify(notificationData))
+  
+      } catch (error) {
+        console.log(error);
+      }
+
       return res.render('dashboard/index', {
         title: 'My Cricle',
         postData: postData,
-        notificationData : notificationData,
+        notificationData: notificationData,
         notificationCount: notificationCount,
         savedPost: savedPost,
         pages: pages
@@ -511,17 +516,5 @@ router.get('/logout', function (req, res, next) {
     console.log(error);
   }
 });
-
-// router.get('/notification', async function (req, res) {
-//   try {
-//       let notificationData = await notificationModel.find({ postOwnerId: req.user._id , isSeen : false }).sort({ createdOn : -1 }).lean()
-//       return res.render('partials/notification', {
-//           notificationData: notificationData
-//       })
-//   } catch (error) {
-//       console.log(error);
-//   }
-// })
-
 
 module.exports = router;

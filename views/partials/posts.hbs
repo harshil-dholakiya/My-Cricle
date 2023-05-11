@@ -2,13 +2,12 @@
     {{#if postData}}
     {{#each postData}}
     {{#each postdata}}
-
     <div class="col-md-4 mt-4">
         <div class="container align-self-center">
             <div class="row row-cards">
                 <div class="grandParent">
                     <div class="card card-sm">
-                        <img src="/images/posts/{{postPath}}" class="card-img-top postImage" height="400px">
+                        <img src="/images/posts/{{postPath}}" class="card-img-top postImage" height="300px">
                         <div class="myModal modal" style="display: none;">
                             <span class="close">&times;</span>
                             <img class="post-modal-content img01">
@@ -37,7 +36,7 @@
                                         </div>
                                     </a>
                                     {{else}}
-                                    {{#compare ../_id "!=" ../../userDetails._id }}
+                                    {{!-- {{#compare ../_id "!=" ../../userDetails._id }} --}}
 
                                     <a href="javascript:void(0)" class="text-muted" data-title="Save">
                                         <div class="savedPostDiv save-post" data-id="{{_id}}">
@@ -53,7 +52,7 @@
                                         </div>
                                     </a>
 
-                                    {{/compare}}
+                                    {{!-- {{/compare}} --}}
                                     {{/inArray}}
 
                                     <a href="javascript: void(0)" class="text-muted comment" title="Comment"
@@ -134,7 +133,7 @@
                             <div class="mt-2"><span class="text-blue">Title</span></div>
                             <div>{{title}}</div>
                             <div class="mt-2"><span class="text-blue">Description</span></div>
-                            <div class="overflow-auto" style="max-width: 100%; height: 55px;">{{description}}</div>
+                            <div class="overflow-auto" style="width: 100%; height: 55px;">{{description}}</div>
                             <div class="mt-2"><span class="text-blue">Like: </span> <span
                                     class="savedPostCountClass">{{savedPostArray}}</span></div>
                         </div>
@@ -147,7 +146,7 @@
     {{/each}}
 </div>
 
-
+{{!-- Pagination --}}
 <div class="d-flex mt-3">
     <ul class="pagination ms-auto">
         <li class="page-item disabled">
@@ -234,7 +233,7 @@
     </form>
 </div>
 
-{{!-- Show liked Post --}}
+{{!-- Show notification liked Post --}}
 <div class="modal modal-blur fade" id="modal-showPost" tabindex="-1" role="dialog" aria-hidden="true">
     <form id="commentForm" enctype="multipart/form-data">
         <input type="hidden" value="" id="hidden">

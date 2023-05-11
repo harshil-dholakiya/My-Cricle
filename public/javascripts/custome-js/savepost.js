@@ -34,6 +34,29 @@ $(document).ready(function () {
         }
     });
 
+    socket.on('notificationCount', function (data) {
+        data = JSON.parse(data);
+        $(".notificationPrepend").prepend(`<div class="list-group-item notification"  style="width: 250px;">
+                                                <div class="row align-items-center">
+                                                    <div class="col-auto"><span class="status-dot d-block"></span></div>
+                                                        <div class="col text-truncate">
+                                                            <a href="#" class="text-body d-block showPost" data-notification-post-id=${data.postId}>${data.likedUserName}</a>
+                                                                <div class="d-block text-muted text-truncate mt-n1">
+                                                                    Liked Your Post
+                                                                </div>
+                                                        </div>
+                                                    <div class="col-auto">
+                                                            <a href="#" class="list-group-item-actions show">
+                                                                <button type="button" class="btn-close notificaton-close" data-close-id=${data.postId} data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                            </a>
+                                                    </div>
+                                                </div>
+                                            </div>`)
+                                            
+        $("#notificationCount").html(`${data.notificationCount}`)
+    });
+
     $(document).off("click", ".save-post").on('click', ".save-post", function () {
         let title = $(this).parent().data('title')
         let $this = $(this);

@@ -17,7 +17,7 @@ $(document).off('change', '.sort').on('change', '.sort', function () {
         type: "GET",
         url: `${url}`,
         success: function (data) {
-            $(".bodyDiv").empty()
+            // $(".bodyDiv").empty()
             $(".bodyDiv").html(data)
             let newSortOrder = (sortOrder == "1") ? "-1" : "1";
             selected.data('sorting', newSortOrder)
@@ -46,7 +46,7 @@ $(document).off('click', '#dateSort').on('click', '#dateSort', function () {
         type: "GET",
         url: `/users/userList/?sortByDate=${dateSort}&sortOrder=${sortOrder}`,
         success: function (data) {
-            $(".bodyDiv").empty()
+            // $(".bodyDiv").empty()
             $(".bodyDiv").html(data)
             let newSortOrder = (sortOrder == "1") ? "-1" : "1";
             $this.data('sort-order', newSortOrder)

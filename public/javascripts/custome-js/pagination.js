@@ -14,11 +14,15 @@ $(document).off('click', '.pages').on('click', '.pages', function () {
     if ($('.rounded').val()) {
         url += `&search=${$('.rounded').val()}`
     }
+
+    if ($('.savePost').val()) {
+        url += `${$('.savePost').val()}`
+    }
+    
     $.ajax({
         type: "GET",
         url: `${url}`,
         success: function (data) {
-            $(".bodyDiv").empty()
             $(".bodyDiv").html(data)
         },
         error: function (data) {
