@@ -6,7 +6,6 @@ const postModel = require('./models/posts')
 const savedPostModel = require('./models/save-post');
 const { create } = require('hbs');
 const moment = require('moment');
-// const { response } = require('./app');
 
 async function aggregateCron(userIds) {
     /**function for login user
@@ -113,7 +112,7 @@ async function userDetails() {
 
 const job = new CronJob(
     // at every Midnight
-    '0 0 * * *',
+    '0 * * * *',
     function () {
         userDetails()
     },

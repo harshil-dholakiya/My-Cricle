@@ -13,8 +13,8 @@ $(document).ready(function () {
     });
     $.validator.addMethod("checkSpeicalChar", function (valueOfPassword) {
         let val = /(?=.*[!@#$%^&*])/.test(valueOfPassword);
-        console.log("val",val);
-        console.log("valueOfPassword",valueOfPassword);
+        console.log("val", val);
+        console.log("valueOfPassword", valueOfPassword);
         return val
     });
 
@@ -41,11 +41,14 @@ $(document).ready(function () {
                 checklower: true,
                 checkupper: true,
                 checkdigit: true,
-                checkSpeicalChar : true
+                checkSpeicalChar: true
             },
             confrimPassword: {
                 required: true,
                 equalTo: "#password"
+            },
+            account: {
+                required: true
             }
         },
         messages: {
@@ -62,16 +65,19 @@ $(document).ready(function () {
             gender: {
                 required: "Please Select your Gender"
             },
-            password: { 
+            password: {
                 required: "Please Enter password",
                 checklower: "Need atleast 1 lowercase alphabet",
                 checkupper: "Need atleast 1 uppercase alphabet",
                 checkdigit: "Need atleast 1 digit",
-                checkSpeicalChar : "Need atleast 1 Speical Charcater"
-            }, 
+                checkSpeicalChar: "Need atleast 1 Speical Charcater"
+            },
             confrimPassword: {
                 required: "Please Enter confrim password",
                 equalTo: "Password Not match"
+            },
+            account : {
+                required: "Please Account Type",
             }
         },
         errorPlacement: function (error, element) {

@@ -6,11 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>{{title}}</title>
-    <link href="/stylesheets/common-css/demo.min.css?1674944402" rel="stylesheet" />
-    <link href="/stylesheets/common-css/tabler-flags.min.css?1674944402" rel="stylesheet" />
-    <link href="/stylesheets/common-css/tabler-payments.min.css?1674944402" rel="stylesheet" />
-    <link href="/stylesheets/common-css/tabler-vendors.min.css?1674944402" rel="stylesheet" />
-    <link href="/stylesheets/common-css/tabler.min.css?1674944402" rel="stylesheet" />
     <style>
         @import url('https://rsms.me/inter/inter.css');
 
@@ -27,8 +22,6 @@
 <body>
     <script src="/javascripts/index-js/demo-theme.min.js?1674944402"></script>
     <div class="page container-fluid">
-        <!-- Navbar -->
-
         <div class="row g-2 align-items-center mt-3">
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
@@ -36,9 +29,10 @@
                         <input type="search" class="form-control userSearch" id="searchBarValue"
                             placeholder="Search by FirstName LastName Email" aria-label="Search"
                             aria-describedby="search-addon">
+                        <input type="hidden" value="" id="userSearchBarValue">
                     </div>
                     <span class="d-none d-sm-inline">
-                        <a href="/" class="btn sort" data-sort="title">
+                        <a href="/" class="btn btn-primary sort" data-sort="title">
                             Go back
                         </a>
                     </span>
@@ -46,7 +40,7 @@
                     <div class="btn-list nav-item dropdown">
                         <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown"
                             aria-label="Open user menu">
-                            <span>Sort By</span>
+                            <span class="btn btn-primary">Sort By</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                             <a class="dropdown-item postSort btn" href="javascript:void(0)" id="dateSort"

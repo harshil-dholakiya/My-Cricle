@@ -38,7 +38,12 @@ let usersModel = function () {
         password: {
             type: String,
             required: true
-        }
+        },
+        accountType: {
+            type: String,
+            enum: ["public", "private"],
+            required: true
+        },
     }, options)
 
     return mongoose.model("users", UsersSchema);

@@ -7,11 +7,11 @@ $(document).ready(function () {
             lastName: {
                 required: true
             },
-            email: {
-                required: true,
-                email: true,
-                remote: "/check-email"
-            },
+            // email: {
+            //     required: true,
+            //     email: true,
+            //     remote: "/check-email"
+            // },
             gender: {
                 required: true,
             }
@@ -23,12 +23,15 @@ $(document).ready(function () {
             lastName: {
                 required: "Please enter Last name"
             },
-            email: {
-                required: "Please enter Email",
-                remote: "Email Already Exists"
-            },
+            // email: {
+            //     required: "Please enter Email",
+            //     remote: "Email Already Exists"
+            // },
             gender: {
                 required: "Please Select Gender"
+            },
+            account: {
+                required: "Please Select Account Type"
             }
         },
         submitHandler: function (form) {

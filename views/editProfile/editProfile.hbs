@@ -1,17 +1,14 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <title>{{title}}</title>
-  <link href="/stylesheets/common-css/demo.min.css?1674944402" rel="stylesheet" />
-  <link href="/stylesheets/common-css/tabler-flags.min.css?1674944402" rel="stylesheet" />
-  <link href="/stylesheets/common-css/tabler-payments.min.css?1674944402" rel="stylesheet" />
-  <link href="/stylesheets/common-css/tabler-vendors.min.css?1674944402" rel="stylesheet" />
-  <link href="/stylesheets/common-css/tabler.min.css?1674944402" rel="stylesheet" />
   <style>
     @import url('https://rsms.me/inter/inter.css');
+
     :root {
       --tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
     }
@@ -24,11 +21,8 @@
 
 <body>
   <script src="/javascripts/index-js/demo-theme.min.js?1674944402"></script>
-
   <div class="page">
-    <!-- Navbar -->
     <div class="page-wrapper">
-      <!-- Page header -->
       <div class="page-header d-print-none">
         <div class="container-xl">
           <div class="row g-2 align-items-center">
@@ -61,7 +55,6 @@
                     <h3 class="card-title">Profile Details</h3>
                     <div class="row align-items-center">
                       <div class="col-auto"><span class="avatar avatar-xl"
-                      
                           style="background-image: url(/images/users/{{userData.profilePath}})"></span>
                       </div>
                       <div class="col-auto">
@@ -84,15 +77,26 @@
                     <div>
                       <div class="row g-2">
                         <div class="col-auto">
-                          <input type="text" class="form-control w-auto" value="{{userData.email}}" name="email" disabled>
+                          <input type="text" class="form-control w-auto" value="{{userData.email}}" name="email"
+                            disabled>
                         </div>
                       </div><br>
 
                       <div class="col-md">
                         <div class="form-label">Gender</div>
-                        <input type="radio" name="gender" value="male" {{#compare userData.gender "==" "male"}}checked{{/compare}}> Male<br>
-                        <input type="radio" name="gender" value="female" {{#compare userData.gender "==" "female"}}checked{{/compare}}> Female
+                        <input type="radio" name="gender" value="male" {{#compare userData.gender "==" "male"
+                          }}checked{{/compare}}> Male<br>
+                        <input type="radio" name="gender" value="female" {{#compare userData.gender "==" "female"
+                          }}checked{{/compare}}> Female
                       </div>
+                      <div class="col-md mt-2">
+                        <div class="form-label">Account</div>
+                        <input type="radio" name="account" value="public" {{#compare userData.accountType "==" "public"
+                          }}checked{{/compare}}> Public<br>
+                        <input type="radio" name="account" value="private" {{#compare
+                          userData.accountType "==" "private" }}checked{{/compare}}> Private
+                      </div>
+
                     </div>
                   </div>
                   <div class="card-footer bg-transparent mt-auto">
@@ -153,11 +157,11 @@
       </footer>
     </div>
   </div>
-  <!-- Libs JS -->
-  <!-- Tabler Core -->
+  {{!--
   <script src="/javascripts/index-js/tabler.min.js?1674944402" defer></script>
-  <script src="/javascripts/index-js/demo.min.js?1674944402" defer></script>
-  <script src="/javascripts/custome-js/updateuser.js"></script>
+  <script src="/javascripts/index-js/demo.min.js?1674944402" defer></script> --}}
+  {{!--
+  <script src="/javascripts/custome-js/updateuser.js"></script> --}}
 </body>
 
 </html>

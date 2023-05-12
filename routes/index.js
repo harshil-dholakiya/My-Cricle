@@ -67,7 +67,6 @@ router.get('/sign-up', function (req, res, next) {
 
 // Dashboard View
 router.get('/', async function (req, res) {
-  console.log(req.query);
   try {
     if (req.isAuthenticated()) {
       const loginUserData = await userModel.findOne({ "_id": req.user._id }, { 'email': 1, "firstName": 1, "lastName": 1, "profilePath": 1 }).lean()
@@ -250,6 +249,35 @@ router.get('/', async function (req, res) {
       postPipeline.push(sortStage);
     }
 
+    // if (req.query.savedPost == "savedPost") {
+    //   let savedPostIds = await savedPostModel.distinct("postId", { userId: req.user._id });
+    //   let savedPostUserIds = await postModel.distinct("userId", { _id: { $in: savedPostIds } });
+
+    //   aggregateQuery.push({
+    //     $match: {
+    //       _id: {
+    //         $in: savedPostUserIds
+    //       }
+    //     }
+    //   });
+
+    //   aggregateQuery.push({
+    //     $lookup: {
+    //       from: "posts",
+    //       let: {
+    //         userId: "$_id"
+    //       },
+    //       pipeline: [{
+    //         $match: {
+    //           $and: [{ $expr: { $eq: ['$$userId', '$userId'] } }, { 'isArchive': false }, { _id: { $in: savedPostIds } }]
+    //         },
+    //       }],
+    //       as: 'postdata'
+    //     }
+    //   }, {
+    //     $unwind: "$postdata"
+    //   });
+    // }
     if (req.query.savedPost == "savedPost") {
       let savedPostIds = await savedPostModel.distinct("postId", { userId: req.user._id });
       let savedPostUserIds = await postModel.distinct("userId", { _id: { $in: savedPostIds } });
@@ -272,6 +300,25 @@ router.get('/', async function (req, res) {
             $match: {
               $and: [{ $expr: { $eq: ['$$userId', '$userId'] } }, { 'isArchive': false }, { _id: { $in: savedPostIds } }]
             },
+          },
+          {
+            $lookup: {
+              from: 'savedPost',
+              let: {
+                postId: '$_id',
+              },
+              pipeline: [{
+                $match: {
+                  $expr: { $eq: ['$$postId', '$postId'] }
+                }
+              }],
+              as: 'savedPostArray'
+            }
+          },
+          {
+            $addFields: {
+              'savedPostArray': { $size: '$savedPostArray' },
+            }
           }],
           as: 'postdata'
         }
@@ -280,16 +327,20 @@ router.get('/', async function (req, res) {
       });
     }
     else {
-      aggregateQuery.push({
-        $lookup: {
-          from: "posts",
-          let: {
-            userId: "$_id"
-          },
-          pipeline: postPipeline,
-          as: 'postdata'
-        }
-      }, {
+      aggregateQuery.push(
+        // {
+        //   $match: { 'accountType': "public" }
+        // },
+        {
+          $lookup: {
+            from: "posts",
+            let: {
+              userId: "$_id"
+            },
+            pipeline: postPipeline,
+            as: 'postdata'
+          }
+        }, {
         $unwind: "$postdata"
       });
     }
@@ -416,10 +467,11 @@ router.get('/', async function (req, res) {
 
       try {
         var notificationData = await notificationModel.find({ postOwnerId: req.user._id, isSeen: false }).sort({ createdOn: -1 }).lean()
+        // var AllNotification = await notificationModel.find({ postOwnerId: req.user._id }).sort({ createdOn: -1 }).lean()
         var notificationCount = notificationData.length
-  
+
         io.to(req.user._id.toString()).emit("notificationCount", JSON.stringify(notificationData))
-  
+
       } catch (error) {
         console.log(error);
       }
@@ -443,7 +495,7 @@ router.get('/', async function (req, res) {
 router.post('/sign-up-data', async function (req, res, next) {
   try {
     var verifyToken = Date.now()
-    const { firstName, lastName, email, gender, password } = req.body
+    const { firstName, lastName, email, gender, password, account } = req.body
     var transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -472,6 +524,7 @@ router.post('/sign-up-data', async function (req, res, next) {
       lastName,
       email,
       gender,
+      accountType: account,
       // verifyToken: verifyToken,
       password: md5(password),
     })
@@ -485,14 +538,14 @@ router.post('/sign-up-data', async function (req, res, next) {
   }
 });
 
-router.get('/verify-email/:token', async function (req, res, next) {
-  if (req.params.token) {
-    await userModel.updateOne({ verifyToken: req.params.token }, { isVerified: true })
-    res.render('dashboard/emailverifyPage', {
-      title: 'verify email',
-    })
-  }
-})
+// router.get('/verify-email/:token', async function (req, res, next) {
+//   if (req.params.token) {
+//     await userModel.updateOne({ verifyToken: req.params.token }, { isVerified: true })
+//     res.render('dashboard/emailverifyPage', {
+//       title: 'verify email',
+//     })
+//   }
+// })
 
 router.get('/check-email', async function (req, res, next) {
   try {

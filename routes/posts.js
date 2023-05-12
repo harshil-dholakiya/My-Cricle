@@ -149,21 +149,21 @@ router.put('/savePost', async function (req, res) {
 
             // Store Notification 
             // check if userId nd req.userId is not same then only store the notification
-            if (userId != postUserId.userId) {
-                try {
-                    await notificationModel.create({ postOwnerId: postUserId.userId, likedBy: likedPostUserDetail._id, postId: postUserId._id, likedUserName: fullName })
-                    let notificationCount = await notificationModel.countDocuments({ postOwnerId: postUserId.userId, isSeen: false })
+            // if (userId != postUserId.userId) {
+            try {
+                await notificationModel.create({ postOwnerId: postUserId.userId, likedBy: likedPostUserDetail._id, postId: postUserId._id, likedUserName: fullName })
+                let notificationCount = await notificationModel.countDocuments({ postOwnerId: postUserId.userId, isSeen: false })
 
-                    let userNotification = await notificationModel.findOne({ postOwnerId: postUserId.userId, likedBy: req.user._id, postId: postId, isSeen: false }).lean()
-                    userNotification["notificationCount"] = notificationCount
-                    io.to(postUserId.userId.toString()).emit("notificationCount", JSON.stringify(userNotification))
-                    io.to(postUserId.userId.toString()).emit("newNotification", `${likedPostUserDetail.firstName} ${likedPostUserDetail.lastName} liked your post`)
+                let userNotification = await notificationModel.findOne({ postOwnerId: postUserId.userId, likedBy: req.user._id, postId: postId, isSeen: false }).lean()
+                userNotification["notificationCount"] = notificationCount
+                io.to(postUserId.userId.toString()).emit("notificationCount", JSON.stringify(userNotification))
+                io.to(postUserId.userId.toString()).emit("newNotification", `${likedPostUserDetail.firstName} ${likedPostUserDetail.lastName} liked your post`)
 
-                } catch (error) {
-                    console.log(error);
-                }
-
+            } catch (error) {
+                console.log(error);
             }
+
+            // }
 
             await savedPostModel.create({ postId: postId, userId: userId })
             res.send({ type: "success" })
@@ -207,7 +207,7 @@ router.put('/savePost', async function (req, res) {
             let likedPostUserDetail = await userModel.findOne({ _id: userId }, { firstName: 1, lastName: 1 }).lean()
 
             //delete permanently notification if user unlike Post
-            await notificationModel.deleteOne({ postOwnerId: postUserId.userId, likedBy: likedPostUserDetail._id, postId: postId })
+            // await notificationModel.deleteOne({ postOwnerId: postUserId.userId, likedBy: likedPostUserDetail._id, postId: postId })
 
             res.send({ type: "Delete success" })
 
@@ -330,6 +330,39 @@ router.put('/postId', async function (req, res, next) {
     }
 })
 
-
+router.get('/get-notification', async function (req, res) {
+    console.log(req.user._id);
+    let allNotification = await notificationModel.aggregate([
+        {
+            $match: {
+               'postOwnerId': new mongoose.Types.ObjectId(req.user._id)
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'likedBy',
+                foreignField: '_id',
+                as: 'userDetails'
+            }
+        },
+        {
+            $sort: { 'createdOn': -1 }
+        },
+        {
+            $unwind: '$userDetails'
+        },
+        {
+            $replaceRoot: {
+                newRoot: "$userDetails"
+            }
+        }
+    ])
+    console.log(allNotification);
+    return res.render('dashboard/allNotifications', {
+        title: "All Notifications",
+        allNotification: allNotification
+    })
+})
 
 module.exports = router;    
