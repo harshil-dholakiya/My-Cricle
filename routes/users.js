@@ -9,6 +9,7 @@ const mongoose = require('mongoose')
 const multer = require('multer')
 const path = require('path');
 const { log } = require('handlebars/runtime');
+const requestModel = require('../models/requests')
 
 /* GET users listing. */
 router.get('/editProfile', async function (req, res, next) {
@@ -26,7 +27,7 @@ router.get('/editProfile', async function (req, res, next) {
       notificationData: notificationData,
       notificationCount: notificationCount
     });
-      
+
   } catch (error) {
     console.log(error)
     res.send({ type: "error" })
@@ -304,6 +305,62 @@ router.delete('/delete-comment/:postId', async function (req, res) {
   try {
     await commentModel.deleteOne({ postId: new mongoose.Types.ObjectId(req.params.postId), commentBy: new mongoose.Types.ObjectId(req.user._id) })
     return res.send({ type: "success" })
+  } catch (error) {
+    console.log(error);
+    return res.send({ type: "error" })
+  }
+})
+
+router.post('/request/:userId', async function (req, res) {
+  try {
+    let findUserAccountType = await userModel.findById({ _id: req.params.userId }, { firstName: 1, lastName: 1, accountType: 1 })
+    let fullName = `${req.user.firstName}${req.user.lastName}`
+    let userAccountType = findUserAccountType.accountType
+    let requestQueryObject = { requestBy: req.user._id, receviedRequestUser: req.params.userId, requestedUserName: fullName, reqStatus: "pending" }
+    let responseSendObject = {
+      accountType: 'private'
+    }
+    if (userAccountType == "public") {
+      requestQueryObject.reqStatus = "accepted"
+      responseSendObject.accountType = "public"
+    }
+
+    let requestSent = await requestModel.create(requestQueryObject)
+
+    io.to(req.params.userId.toString()).emit("requestNotification", JSON.stringify(requestSent))
+
+    return res.send(responseSendObject)
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+router.get('/get-requests/:userId', async function (req, res) {
+  try {
+    let allRequest = await requestModel.aggregate([
+      {
+        $match: {
+          'receviedRequestUser': new mongoose.Types.ObjectId(req.user._id)
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'requestBy',
+          foreignField: '_id',
+          as: 'userDetails'
+        }
+      },
+      {
+        $sort: { 'createdOn': -1 }
+      },
+      {
+        $unwind: '$userDetails'
+      },
+      ])
+    res.render('partials/getRequests', {
+      requestData: allRequest
+    })
   } catch (error) {
     console.log(error);
     return res.send({ type: "error" })

@@ -4,11 +4,14 @@
     <div class="col-md-4 col-lg-4 mt-3">
         <div class="card">
             <div class="card-body p-4 text-center">
-                <span class="avatar avatar-xl mb-3 rounded"
-                    style="background-image: url(/images/users/{{#if profilePath}}{{profilePath}}{{else}}defaultAvatar.jpg{{/if}})"></span>
+                <span class="avatar avatar-xl mb-3"
+                    style="border-radius :55px; background-image: url(/images/users/{{#if profilePath}}{{profilePath}}{{else}}defaultAvatar.jpg{{/if}});"></span>
                 <h3 class="m-0 mb-1">{{firstName}} {{lastName}}</a></h3>
                 <div class="text-muted">Total post: {{postCreatedByUser}}</div>
                 <div class="badge bg-green-lt">Account: {{accountType}}</div>
+                {{#compare ../userDetails._id "!=" _id }}
+                <div class="btn btn-primary badge bg-blue-lt followBtn" data-user-id="{{_id}}">Follow</div>
+                {{/compare}}
                 <div class="mt-3">
                     <span class="">
                         <svg xmlns="http://www.w3.org/2000/svg"

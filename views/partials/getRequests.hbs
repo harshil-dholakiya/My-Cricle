@@ -1,0 +1,42 @@
+<div class="table-responsive">
+    <table class="table table-vcenter card-table">
+        <thead>
+            <tr>
+                <th>User Name</th>
+                <th>Gender</th>
+                <th>Time</th>
+                <th>Follow Back</th>
+            </tr>
+        </thead>
+        <tbody class="tableBody">
+            {{log requestData}}
+            {{#each requestData}}
+            <tr>
+                <td>
+                    <div class="d-flex py-1 align-items-center">
+                        <span class="avatar me-2"
+                            style="border-radius :25px; background-image: url(/images/users/{{#if userDetails.profilePath}}{{userDetails.profilePath}}{{else}}defaultAvatar.jpg{{/if}})"></span>
+                        <div class="flex-fill">
+                            <div class="font-weight-medium">{{requestedUserName}}</div>
+                            <div class="text-muted"><a href="#" class="text-reset">{{userDetails.email}}</a></div>
+
+                        </div>
+                    </div>
+                </td>
+                <td>{{userDetails.gender}}</td>
+                <td>
+                    <div>{{dateFormat createdOn}}</div>
+                    <div class="text-muted">{{#compare reqStatus "==" "accepted"}}Started following
+                        you{{else}}request to follow you{{/compare}}</div>
+                </td>
+                <td>
+                    {{#compare userDetails.accountType "==" "public"}}<div class="btn btn-primary badge bg-blue-lt"
+                        data-user-id="{{requestBy}}">Follow</div>{{else}}<div class="btn btn-primary badge bg-blue-lt"
+                        data-user-id="{{requestBy}}">Accept</div>
+                    <div class="btn btn-primary badge bg-blue-lt" data-user-id="{{requestBy}}">Cancel</div>{{/compare}}
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>

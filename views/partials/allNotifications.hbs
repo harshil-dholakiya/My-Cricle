@@ -6,34 +6,33 @@
                     <th style="width: 20px;"></th>
                     <th>User Name</th>
                     <th>Time</th>
-                    {{!-- <th>Role</th> --}}
                     <th class="w-1"></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="tableBody">
                 {{#each allNotification}}
-                <a href="#">
-                    <tr>
-                        <td>
-                            <span class="status-dot status-dot-animated bg-primary d-block"></span>
-                        </td>
-                        <td>
-                            <div class="d-flex py-1 align-items-center">
-                                <span class="avatar me-2"
-                                    style="background-image: url(/images/users/{{#if profilePath}}{{profilePath}}{{else}}defaultAvatar.jpg{{/if}})"></span>
-                                <div class="flex-fill">
-                                    <div class="font-weight-medium">{{likedUserName}}</div>
-                                    {{!-- <div class="text-muted"><a href="#" class="text-reset">{{email}}</a></div>
-                                    --}}
-                                </div>
+                <tr id="{{likedBy}}{{postId}}" class="showPostFromAllNotification" data-postid="{{postId}}" data-isseen="{{isSeen}}" {{#compare
+                    isSeen "==" false }}style="background-color: #add8e6;"
+                    {{/compare}}style="background-color: #ffffff">
+                    <td>
+                        <span class="status-dot status-dot-animated bg-primary d-block"></span>
+                    </td>
+                    <td>
+                        <div class="d-flex py-1 align-items-center">
+                            <span class="avatar me-2"
+                                style="border-radius :25px; background-image: url(/images/users/{{#if userDetails.profilePath}}{{userDetails.profilePath}}{{else}}defaultAvatar.jpg{{/if}})"></span>
+                            <div class="flex-fill">
+                                <div class="font-weight-medium">{{likedUserName}}</div>
+                                <div class="text-muted"><a href="#" class="text-reset">{{userDetails.email}}</a></div>
+
                             </div>
-                        </td>
-                        <td>
-                            <div>{{dateFormat createdOn}}</div>
-                            <div class="text-muted">Liked your post</div>
-                        </td>
-                    </tr>
-                </a>
+                        </div>
+                    </td>
+                    <td>
+                        <div>{{dateFormat createdOn}}</div>
+                        <div class="text-muted">Liked your post</div>
+                    </td>
+                </tr>
                 {{/each}}
             </tbody>
         </table>

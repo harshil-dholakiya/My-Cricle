@@ -142,7 +142,7 @@ router.put('/savePost', async function (req, res) {
             // postOwner UserId
             let postUserId = await postModel.findOne({ _id: postId }, { userId: 1 })
             // who liked the post
-            // userId - req.user._id
+            // userId = req.user._id
             let likedPostUserDetail = await userModel.findOne({ _id: userId }, { firstName: 1, lastName: 1 }).lean()
 
             let fullName = `${likedPostUserDetail.firstName} ${likedPostUserDetail.lastName}`
@@ -162,8 +162,6 @@ router.put('/savePost', async function (req, res) {
             } catch (error) {
                 console.log(error);
             }
-
-            // }
 
             await savedPostModel.create({ postId: postId, userId: userId })
             res.send({ type: "success" })
@@ -246,17 +244,17 @@ router.put('/savePost', async function (req, res) {
     }
 })
 
-// notification isSeen Update
-router.put('/get-post-data/:postId', async function (req, res) {
-    try {
-        let postData = await postModel.findOne({ _id: req.params.postId }).lean()
-        await notificationModel.updateOne({ postId: req.params.postId, isSeen: false }, { $set: { isSeen: true } })
-        return res.send(postData)
+// // notification isSeen Update
+// router.put('/get-post-data/:postId', async function (req, res) {
+//     try {
+//         let postData = await postModel.findOne({ _id: req.params.postId }).lean()
+//         await notificationModel.updateOne({ postId: req.params.postId, isSeen: false }, { $set: { isSeen: true } })
+//         return res.send(postData)
 
-    } catch (error) {
-        console.log(error);
-    }
-})
+//     } catch (error) {
+//         console.log(error);
+//     }
+// })
 
 router.put('/archivePost', async function (req, res) {
     try {
@@ -331,11 +329,37 @@ router.put('/postId', async function (req, res, next) {
 })
 
 router.get('/get-notification', async function (req, res) {
-    console.log(req.user._id);
+    // let allNotification = await notificationModel.aggregate([
+    //     {
+    //         $match: {
+    //         'postOwnerId': new mongoose.Types.ObjectId(req.user._id)
+    //         }
+    //     },
+    //     {
+    //         $lookup: {
+    //             from: 'users',
+    //             localField: 'likedBy',
+    //             foreignField: '_id',
+    //             as: 'userDetails'
+    //         }
+    //     },
+    //     {
+    //         $sort: { 'createdOn': -1 }
+    //     },
+    //     {
+    //         $unwind: '$userDetails'
+    //     },
+    //     {
+    //         $replaceRoot: {
+    //             newRoot: "$userDetails"
+    //         }
+    //     }
+    // ])
+
     let allNotification = await notificationModel.aggregate([
         {
             $match: {
-               'postOwnerId': new mongoose.Types.ObjectId(req.user._id)
+                'postOwnerId': new mongoose.Types.ObjectId(req.user._id)
             }
         },
         {
@@ -352,17 +376,38 @@ router.get('/get-notification', async function (req, res) {
         {
             $unwind: '$userDetails'
         },
-        {
-            $replaceRoot: {
-                newRoot: "$userDetails"
-            }
-        }
+        //         {
+        //             $replaceRoot: {
+        //                 newRoot: "$userDetails"
+        //             }
+        //         }
     ])
-    console.log(allNotification);
+    // console.log(allNotification);
     return res.render('dashboard/allNotifications', {
         title: "All Notifications",
         allNotification: allNotification
     })
+})
+
+
+// notification isSeen Update
+router.put('/get-post-data/:postId', async function (req, res) {
+    try {
+        let postData = await postModel.findOne({ _id: req.params.postId }).lean()
+        
+        // let postUserId = await postModel.findOne({ _id: req.params.postId }, { userId: 1 })
+        // let userNotification = await notificationModel.findOne({ postOwnerId: postUserId.userId, postId: req.params.postId }).lean()
+        // let notificationCount = await notificationModel.countDocuments({ postOwnerId: postUserId.userId, isSeen: false })
+        // userNotification["notificationCount"] = notificationCount
+        
+        // io.to(postUserId.userId.toString()).emit("notificationCount", JSON.stringify(userNotification))
+        await notificationModel.updateOne({ postId: req.params.postId, isSeen: false }, { $set: { isSeen: true } })
+        
+        return res.send(postData)
+
+    } catch (error) {
+        console.log(error);
+    }
 })
 
 module.exports = router;    

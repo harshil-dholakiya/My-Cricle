@@ -469,7 +469,6 @@ router.get('/', async function (req, res) {
         var notificationData = await notificationModel.find({ postOwnerId: req.user._id, isSeen: false }).sort({ createdOn: -1 }).lean()
         // var AllNotification = await notificationModel.find({ postOwnerId: req.user._id }).sort({ createdOn: -1 }).lean()
         var notificationCount = notificationData.length
-
         io.to(req.user._id.toString()).emit("notificationCount", JSON.stringify(notificationData))
 
       } catch (error) {

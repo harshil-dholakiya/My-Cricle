@@ -16,6 +16,7 @@ $(document).ready(function () {
         "showMethod": "fadeIn",
         "hideMethod": "fadeOut"
     }
+
     const loginUserId = $("#loginUserId").data('login-user-id')
     const socket = io({ query: `userId=${loginUserId}` });
 
@@ -36,13 +37,13 @@ $(document).ready(function () {
 
     socket.on('notificationCount', function (data) {
         data = JSON.parse(data);
-        $(".notificationPrepend").prepend(`<div class="list-group-item notification"  style="width: 250px;">
+        $(".notificationPrepend").prepend(`<div class="list-group-item notification" id="${data.likedBy}${data.postId}" style="background-color: #add8e6;">
                                                 <div class="row align-items-center">
                                                     <div class="col-auto"><span class="status-dot status-dot-animated bg-primary d-block"></span></div>
                                                         <div class="col text-truncate">
-                                                            <a href="#" class="text-body d-block showPost" data-notification-post-id=${data.postId}>${data.likedUserName}</a>
+                                                            <a href="#" class="text-body d-block showPost" data-userpost-id="${data.likedBy}${data.postId}" data-notification-post-id=${data.postId}>${data.likedUserName}</a>
                                                                 <div class="d-block text-muted text-truncate mt-n1">
-                                                                    Liked Your Post
+                                                                    Liked Your Post ${data.createdOn}
                                                                 </div>
                                                         </div>
                                                     <div class="col-auto">

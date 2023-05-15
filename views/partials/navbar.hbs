@@ -71,13 +71,15 @@
                 </span>
               </div>
               <div class="list-group list-group-flush list-group-hoverable notificationPrepend overflow-auto"
-                style="width:400px; height : 170px">
+                style="max-width:400px; max-height : 170px">
                 {{#each notificationData}}
-                <div class="list-group-item notification">
+                <div class="list-group-item notification" id="{{likedBy}}{{postId}}" {{#compare isSeen "==" false
+                  }}style="background-color: #add8e6;" {{else}}style="background-color: #ffffff" {{/compare}}>
                   <div class="row align-items-center">
-                    <div class="col-auto"><span class="status-dot status-dot-animated bg-primary d-block"></span></div>
+                    <div class="col-auto"><span class="status-dot status-dot-animated bg-primary d-block"></span>
+                    </div>
                     <div class="col text-truncate">
-                      <a href="#" class="text-body d-block showPost"
+                      <a href="#" class="text-body d-block showPost" data-userpost-id="{{likedBy}}{{postId}}"
                         data-notification-post-id='{{postId}}'>{{likedUserName}}</a>
                       <div class="d-block text-muted text-truncate mt-n1">
                         Liked Your Post {{dateFormat createdOn}}
@@ -95,6 +97,19 @@
               </div>
             </div>
           </div>
+        </div>
+
+        {{!-- Requests --}}
+        <div class="nav-item dropdown d-none d-md-flex me-3" id="requests" data-userid="{{userDetails._id}}">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user-plus" width="24" height="24"
+            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
+            <path d="M16 19h6"></path>
+            <path d="M19 16v6"></path>
+            <path d="M6 21v-2a4 4 0 0 1 4 -4h4"></path>
+          </svg>
         </div>
 
       </div>

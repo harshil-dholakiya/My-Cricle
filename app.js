@@ -24,8 +24,7 @@ const statisticsModel = require('./models/statistics')
 const fs = require('fs')
 const nodemailer = require('nodemailer');
 
-
-
+global.moment
 
 try {
   mongoose.connect(process.env.connectionString)
