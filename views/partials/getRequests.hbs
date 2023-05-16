@@ -9,7 +9,7 @@
             </tr>
         </thead>
         <tbody class="tableBody">
-            {{log requestData}}
+            {{log "requestData" requestData}}
             {{#each requestData}}
             <tr>
                 <td>
@@ -19,7 +19,6 @@
                         <div class="flex-fill">
                             <div class="font-weight-medium">{{requestedUserName}}</div>
                             <div class="text-muted"><a href="#" class="text-reset">{{userDetails.email}}</a></div>
-
                         </div>
                     </div>
                 </td>
@@ -29,11 +28,20 @@
                     <div class="text-muted">{{#compare reqStatus "==" "accepted"}}Started following
                         you{{else}}request to follow you{{/compare}}</div>
                 </td>
-                <td>
-                    {{#compare userDetails.accountType "==" "public"}}<div class="btn btn-primary badge bg-blue-lt"
-                        data-user-id="{{requestBy}}">Follow</div>{{else}}<div class="btn btn-primary badge bg-blue-lt"
-                        data-user-id="{{requestBy}}">Accept</div>
-                    <div class="btn btn-primary badge bg-blue-lt" data-user-id="{{requestBy}}">Cancel</div>{{/compare}}
+                <td class="buttons">
+                    {{#compare requestedUserAccountType "==" "public"}}
+                    <div class="btn btn-primary badge bg-blue-lt folowBackBtn" id="{{../userDetails._id}}"
+                        data-user-id="{{requestBy}}">Follow</div>
+                    {{else}}
+                    {{#compare reqStatus "==" "pending"}}
+                    <div class="btn btn-primary badge bg-blue-lt acceptOrDeleteBtn" data-user-id="{{requestBy}}"
+                        data-req-isaccepted="accepted">Accept</div>
+                    <div class="btn btn-primary badge bg-red-lt acceptOrDeleteBtn" data-req-isaccepted="rejected"
+                        data-user-id="{{requestBy}}">Delete</div>
+                    {{else}}
+                    <div class="btn btn-primary badge bg-blue-lt">{{reqStatus}}</div>
+                    {{/compare}}
+                    {{/compare}}
                 </td>
             </tr>
             {{/each}}

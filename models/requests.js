@@ -22,6 +22,12 @@ let requestModel = function () {
         },
         requestedUserName: {
             type: String,
+        },
+        profilePhotoOfRequestedUser: {
+            type: String,
+        },
+        requestedUserAccountType:{
+            type : String
         }
     }, options)
     return mongoose.model("requests", requestSchema);
