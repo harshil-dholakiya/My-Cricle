@@ -1,6 +1,6 @@
 <div class="row container" style="margin-left: 170px;">
+    {{!-- {{log "userData" userData}} --}}
     {{#each userData}}
-    {{!-- {{log "requestOfLoginUser.reqStatus" requestOfLoginUser.reqStatus}} --}}
     <div class="col-md-4 col-lg-4 mt-3">
         <div class="card">
             <div class="card-body p-4 text-center">
@@ -10,7 +10,10 @@
                 <div class="text-muted">Total post: {{postCreatedByUser}}</div>
                 <div class="badge bg-green-lt">Account: {{accountType}}</div>
                 {{#compare ../userDetails._id "!=" _id }}
-                <div class="btn btn-primary badge bg-blue-lt followBtn" data-title="sent" id="{{../userDetails._id}}{{_id}}" data-user-id="{{_id}}">
+                {{!-- {{log requestOfLoginUser.reqStatus}} --}}
+                <div class="btn btn-primary badge bg-blue-lt followBtn" {{#compare
+                    requestOfLoginUser.reqStatus "==" 'pending' }}data-title="rejected"{{else}}data-title="sent"{{/compare}}
+                    id="{{../userDetails._id}}{{_id}}" data-user-id="{{_id}}">
                     {{#if requestOfLoginUser.reqStatus}}{{requestOfLoginUser.reqStatus}}
                     {{else}}Follow{{/if}}
                 </div>
@@ -28,8 +31,8 @@
                         </svg> {{savedPost}}</span>
                 </div>
             </div>
-            <div class="d-flex">
-                <span class="card-btn">
+            <div class="d-flex row">
+                <span class="card-btn col-sm-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2 text-muted" width="24" height="24"
                         viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -39,7 +42,7 @@
                         <path d="M3 7l9 6l9 -6"></path>
                     </svg>
                     {{email}}</span>
-                <span class="card-btn">
+                <span class="card-btn col-sm-4">
                     {{dateFormat createdOn}}</span>
             </div>
         </div>

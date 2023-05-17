@@ -1,4 +1,4 @@
-<div class="table-responsive">
+<div class="table-responsive mt-4">
     <table class="table table-vcenter card-table">
         <thead>
             <tr>
@@ -9,7 +9,6 @@
             </tr>
         </thead>
         <tbody class="tableBody">
-            {{log "requestData" requestData}}
             {{#each requestData}}
             <tr>
                 <td>
@@ -17,7 +16,7 @@
                         <span class="avatar me-2"
                             style="border-radius :25px; background-image: url(/images/users/{{#if userDetails.profilePath}}{{userDetails.profilePath}}{{else}}defaultAvatar.jpg{{/if}})"></span>
                         <div class="flex-fill">
-                            <div class="font-weight-medium">{{requestedUserName}}</div>
+                            <div class="font-weight-medium">{{userDetails.firstName}} {{userDetails.lastName}}</div>
                             <div class="text-muted"><a href="#" class="text-reset">{{userDetails.email}}</a></div>
                         </div>
                     </div>
@@ -29,9 +28,11 @@
                         you{{else}}request to follow you{{/compare}}</div>
                 </td>
                 <td class="buttons">
+                    {{log reqStatus}}
                     {{#compare requestedUserAccountType "==" "public"}}
                     <div class="btn btn-primary badge bg-blue-lt folowBackBtn" id="{{../userDetails._id}}"
-                        data-user-id="{{requestBy}}">Follow</div>
+                        data-user-id="{{requestBy}}">{{#compare reqStatus "=="
+                        "accepted"}}Follow{{else}}{{reqStatus}}{{/compare}}</div>
                     {{else}}
                     {{#compare reqStatus "==" "pending"}}
                     <div class="btn btn-primary badge bg-blue-lt acceptOrDeleteBtn" data-user-id="{{requestBy}}"

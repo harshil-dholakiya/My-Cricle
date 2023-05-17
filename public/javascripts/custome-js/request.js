@@ -20,11 +20,15 @@ socket.on('isRequestAccepted', function (data) {
     if (data.isAccepted == 'accepted') {
         $(`#${loginUserId}`).html('accepted')
         $(`#${data.userIdToEmit}`).html('accepted')
+
+        toastr.info(`${data.userName} accepted your request`);
     }
     else {
         $(`#${loginUserId}`).html('rejected')
         $(`#${data.userIdToEmit}`).html('rejected')
-        // console.log($(`#${data.userIdToEmit}`).data('title', 'rejected'))
+
+        toastr.info(`${data.userName} Rejected your request`);
+
     }
 });
 
@@ -47,14 +51,12 @@ $(document).off("click", '.followBtn').on('click', '.followBtn', function () {
         "hideMethod": "fadeOut"
     }
     let userId = $(this).data('user-id')
-    let title = $(this).data('title')
-    console.log(title)
     $this = $(this)
     $.ajax({
-        url: `/users/request/${userId}/${title}`,
+        url: `/users/request/${userId}`,
         type: 'post',
         success: function (data) {
-            $this.data('title','rejected')
+
             if (data.accountType == "private") {
                 $this.html("pending")
             } else {
@@ -69,6 +71,7 @@ $(document).off("click", '.followBtn').on('click', '.followBtn', function () {
 
 $(document).off('click', '#requests').on('click', '#requests', function () {
     userId = $(this).data("userid")
+    // console.log("loginUserId", loginUserId);
     $this = $(this)
     $.ajax({
         type: "get",
@@ -87,6 +90,7 @@ $(document).off('click', '.acceptOrDeleteBtn').on('click', '.acceptOrDeleteBtn',
     let userId = $(this).data("user-id")
     let isAccepted = $(this).data('req-isaccepted')
     $isAccepted = isAccepted
+    console.log("loginUserId", loginUserId);
     $this = $(this)
     $.ajax({
         type: "put",
@@ -95,11 +99,14 @@ $(document).off('click', '.acceptOrDeleteBtn').on('click', '.acceptOrDeleteBtn',
             if (data.type == "success") {
                 if ($isAccepted == 'accepted') {
                     $this.closest('.buttons').html(`<div
-                    class="btn btn-primary badge bg-blue-lt folowBackBtn" id=${loginUserId} data-user-id=${userId}>Follow back</div>`)
+                    class="btn btn-primary badge bg-blue-lt accepted">accepted</div>`)
+                    // $this.closest('tr').remove()
+
                 }
                 if ($isAccepted == 'rejected') {
-                    $this.closest('.buttons').html(`<div
-                    class="btn btn-primary badge bg-blue-lt canceled" data-user-id=${userId}>Rejected</div>`)
+                    // $this.closest('.buttons').html(`<div
+                    // class="btn btn-primary badge bg-blue-lt canceled">rejected</div>`)
+                    $this.closest('tr').remove()
                 }
             }
         },
@@ -112,7 +119,6 @@ $(document).off('click', '.acceptOrDeleteBtn').on('click', '.acceptOrDeleteBtn',
 $(document).off("click", '.folowBackBtn').on('click', '.folowBackBtn', function () {
     console.log("clicked");
     let userId = $(this).data('user-id')
-    console.log("From FollowBack", userId)
     $this = $(this)
     $.ajax({
         url: `/users/request/${userId}`,

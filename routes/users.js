@@ -102,21 +102,37 @@ router.get('/userList', async function (req, res) {
           localField: '_id',
           foreignField: 'userId',
           as: "savedPost"
-
         }
-      }, {
-      $project: {
-        "firstName": 1,
-        "lastName": 1,
-        "profilePath": 1,
-        "createdOn": 1,
-        "email": 1,
-        "postCreatedByUser": { $size: "$postCreatedByUser" },
-        "savedPost": { $size: "$savedPost" }
-      }
-    }, {
-      $sort: { 'createdOn': sortingOrder }
-    })
+      },
+      {
+        $lookup: {
+          from: "requests",
+          let: { userId: "$_id" },
+          pipeline: [{
+            $match: {
+              $expr: { $and: [{ $eq: ['$$userId', '$receviedRequestUser'] }, { $eq: ['$requestBy', new mongoose.Types.ObjectId(req.user._id)] }] }
+            }
+          }],
+          as: 'requestOfLoginUser'
+        }
+      },
+      { $unwind: { path: "$requestOfLoginUser", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          "firstName": 1,
+          "lastName": 1,
+          "profilePath": 1,
+          "createdOn": 1,
+          "email": 1,
+          "accountType": 1,
+          "postCreatedByUser": { $size: "$postCreatedByUser" },
+          "savedPost": { $size: "$savedPost" },
+          'requestOfLoginUser.reqStatus': 1,
+        }
+      },
+      {
+        $sort: { 'createdOn': sortingOrder }
+      })
 
     if (req.query.search) {
       userscountDocuments.push({
@@ -198,7 +214,7 @@ router.get('/userList', async function (req, res) {
           let: { userId: "$_id" },
           pipeline: [{
             $match: {
-              $expr: { $and: [{ $eq: ['$$userId', '$receviedRequestUser'] }, { $eq: ['$requestBy', new mongoose.Types.ObjectId(req.user._id)] }] }
+              $expr: { $and: [{ $eq: ['$$userId', '$receviedRequestUser'] }, { $eq: ['$requestBy', new mongoose.Types.ObjectId(req.user._id)] }, { $ne: ["$reqStatus", 'rejected'] }] }
             }
           }],
           as: 'requestOfLoginUser'
@@ -354,7 +370,7 @@ router.delete('/delete-comment/:postId', async function (req, res) {
   }
 })
 
-router.post('/request/:userId/:title', async function (req, res) {
+router.post('/request/:userId', async function (req, res) {
   try {
     let findUserAccountType = await userModel.findById({ _id: req.params.userId }, { firstName: 1, lastName: 1, accountType: 1, profilePath: 1 })
     let fullName = `${req.user.firstName}${req.user.lastName}`
@@ -367,9 +383,9 @@ router.post('/request/:userId/:title', async function (req, res) {
       requestQueryObject.reqStatus = "accepted"
       responseSendObject.accountType = userAccountType
     }
-    let isAlreadyRequested = await requestModel.find({ requestBy: req.user._id, receviedRequestUser: req.params.userId })
-    let title = req.params.title
-    if (!isAlreadyRequested.length || title == "rejected") {
+    let isAlreadyRequested = await requestModel.find({ requestBy: req.user._id, receviedRequestUser: req.params.userId, reqStatus: { $in: ['accepted', 'pending'] } })
+    console.log("isAlreadyRequested", isAlreadyRequested);
+    if (!isAlreadyRequested.length) {
       let requestSent = await requestModel.create(requestQueryObject)
       io.to(req.params.userId.toString()).emit("requestNotification", JSON.stringify(requestSent))
       return res.send(responseSendObject)
@@ -384,7 +400,8 @@ router.get('/get-requests/:userId', async function (req, res) {
     let allRequest = await requestModel.aggregate([
       {
         $match: {
-          'receviedRequestUser': new mongoose.Types.ObjectId(req.user._id),
+          $and: [{ 'receviedRequestUser': new mongoose.Types.ObjectId(req.user._id) }, { "reqStatus": { $in: ['accepted', 'pending'] } }],
+
         }
       },
       {
@@ -399,9 +416,11 @@ router.get('/get-requests/:userId', async function (req, res) {
         $sort: { 'createdOn': -1 }
       },
       {
-        $unwind: '$userDetails'
+        $limit: 1
       },
+      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } },
     ])
+
     res.render('partials/getRequests', {
       requestData: allRequest
     })
@@ -413,13 +432,13 @@ router.get('/get-requests/:userId', async function (req, res) {
 
 router.put('/isaccepted-request/:userId/:isAccepted', async function (req, res) {
   try {
-
-    let updateObject = { reqStatus: req.params.isAccepted }
-
-    let isRequestAccepted = await requestModel.updateMany({ requestBy: new mongoose.Types.ObjectId(req.params.userId), receviedRequestUser: new mongoose.Types.ObjectId(req.user._id) }, { $set: updateObject })
+    var isRequestAccepted = await requestModel.updateMany({ requestBy: new mongoose.Types.ObjectId(req.params.userId), receviedRequestUser: new mongoose.Types.ObjectId(req.user._id) }, { $set: { reqStatus: req.params.isAccepted } })
 
     let userIdToEmit = new mongoose.Types.ObjectId(req.params.userId) + new mongoose.Types.ObjectId(req.user._id)
+    let receivedRequestUserName = await userModel.findOne({ _id: new mongoose.Types.ObjectId(req.user._id) }, { firstName: 1, lastName: 1 })
+    let fullName = `${receivedRequestUserName.firstName} ${receivedRequestUserName.lastName}`
 
+    isRequestAccepted.userName = fullName
     isRequestAccepted.userIdToEmit = userIdToEmit
     isRequestAccepted.isAccepted = req.params.isAccepted
     isRequestAccepted.requestBy = req.params.userId

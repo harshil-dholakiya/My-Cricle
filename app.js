@@ -24,8 +24,6 @@ const statisticsModel = require('./models/statistics')
 const fs = require('fs')
 const nodemailer = require('nodemailer');
 
-global.moment
-
 try {
   mongoose.connect(process.env.connectionString)
   console.log("Connected with mongoDb");
@@ -34,7 +32,6 @@ try {
 }
 
 var app = express();
-
 
 const hbs = exphbs.create({
   defaultLayout: 'main',
