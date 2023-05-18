@@ -6,8 +6,8 @@ $(document).off('change', '.filter').on('change', '.filter', function () {
         url += `&${$('.sortType').val()}`
     }
 
-    if ($('.rounded').val()) {
-        url += `&search=${$('.rounded').val()}`
+    if ($('.searchValue').val()) {
+        url += `&search=${$('.searchValue').val()}`
     }
 
     $this = $(this)
@@ -28,8 +28,8 @@ $(document).off('change', '.filter').on('change', '.filter', function () {
 $(document).off('click', '.savedPost').on('click', '.savedPost', function () {
 
     let url = `/?savedPost=savedPost`
-    if ($('.rounded').val()) {
-        url += `&search=${$('.rounded').val()}`
+    if ($('.searchValue').val()) {
+        url += `&search=${$('.searchValue').val()}`
     }
     $this = $(this)
     
@@ -46,8 +46,8 @@ $(document).off('click', '.savedPost').on('click', '.savedPost', function () {
     })
 });
 
-$(document).off('keyup', '.rounded').on('keyup', '.rounded', function () {
-    let serachValue = $(".rounded").val()
+$(document).off('keyup', '.searchValue').on('keyup', '.searchValue', function () {
+    let serachValue = $(".searchValue").val()
     serachValue.trim()
 
     let url = `/?search=${serachValue}`

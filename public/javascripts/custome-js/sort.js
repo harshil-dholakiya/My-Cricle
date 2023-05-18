@@ -8,8 +8,8 @@ $(document).off('change', '.sort').on('change', '.sort', function () {
         url += `&${$('.type').val()}`
     }
 
-    if ($('.rounded').val()) {
-        url += `&search=${$('.rounded').val()}`
+    if ($('.searchValue').val()) {
+        url += `&search=${$('.searchValue').val()}`
     }
 
     $this = $(this)

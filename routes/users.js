@@ -10,6 +10,7 @@ const multer = require('multer')
 const path = require('path');
 const { log } = require('handlebars/runtime');
 const requestModel = require('../models/requests');
+const chatModel = require('../models/chats');
 const { title } = require('process');
 
 /* GET users listing. */
@@ -401,7 +402,6 @@ router.get('/get-requests/:userId', async function (req, res) {
       {
         $match: {
           $and: [{ 'receviedRequestUser': new mongoose.Types.ObjectId(req.user._id) }, { "reqStatus": { $in: ['accepted', 'pending'] } }],
-
         }
       },
       {
@@ -450,6 +450,52 @@ router.put('/isaccepted-request/:userId/:isAccepted', async function (req, res) 
     console.log(error);
     return res.send({ type: "error" })
   }
+})
+
+router.get('/chat-model', async function (req, res) {
+  try {
+    let allUsers = await userModel.find({ _id: { $ne: req.user._id } }).lean()
+    allUsers[0]["loginUserId"] = req.user._id
+    return res.send(allUsers)
+
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+router.get('/chat/:userId', async function (req, res) {
+  try {
+    let chatMessages = await chatModel.aggregate([{
+      $match: {
+        $or: [{
+          $and: [{
+            'senderId': new mongoose.Types.ObjectId(req.user._id)
+          }, {
+            'receiverId': new mongoose.Types.ObjectId(req.params.userId)
+          }]
+        },
+        {
+          $and: [{
+            'senderId': new mongoose.Types.ObjectId(req.params.userId)
+          }, {
+            'receiverId': new mongoose.Types.ObjectId(req.user._id)
+          }]
+        }]
+      }
+    }
+    ])
+    return res.send(chatMessages)
+
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+router.post('/userChat/:userId', async function (req, res) {
+  let createMessage = await chatModel.create({ chatMessage: req.body.chatMessage, receiverId: req.params.userId, senderId: req.user._id })
+
+  io.to(req.params.userId.toString()).emit("newMessage", createMessage)
+  return res.send(createMessage)
 })
 
 module.exports = router;

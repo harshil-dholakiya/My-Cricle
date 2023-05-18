@@ -11,8 +11,8 @@ $(document).off('click', '.pages').on('click', '.pages', function () {
         url += `&${$('.type').val()}`
     }
 
-    if ($('.rounded').val()) {
-        url += `&search=${$('.rounded').val()}`
+    if ($('.searchValue').val()) {
+        url += `&search=${$('.searchValue').val()}`
     }
 
     if ($('.savePost').val()) {

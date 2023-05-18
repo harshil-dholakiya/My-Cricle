@@ -71,7 +71,6 @@ $(document).off("click", '.followBtn').on('click', '.followBtn', function () {
 
 $(document).off('click', '#requests').on('click', '#requests', function () {
     userId = $(this).data("userid")
-    // console.log("loginUserId", loginUserId);
     $this = $(this)
     $.ajax({
         type: "get",
@@ -85,12 +84,10 @@ $(document).off('click', '#requests').on('click', '#requests', function () {
     })
 })
 
-
 $(document).off('click', '.acceptOrDeleteBtn').on('click', '.acceptOrDeleteBtn', function () {
     let userId = $(this).data("user-id")
     let isAccepted = $(this).data('req-isaccepted')
     $isAccepted = isAccepted
-    console.log("loginUserId", loginUserId);
     $this = $(this)
     $.ajax({
         type: "put",
@@ -117,7 +114,6 @@ $(document).off('click', '.acceptOrDeleteBtn').on('click', '.acceptOrDeleteBtn',
 })
 
 $(document).off("click", '.folowBackBtn').on('click', '.folowBackBtn', function () {
-    console.log("clicked");
     let userId = $(this).data('user-id')
     $this = $(this)
     $.ajax({
