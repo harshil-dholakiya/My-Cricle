@@ -4,5 +4,6 @@ module.exports = function (server) {
         let userId = socket.handshake.query.userId
         socket.join(userId);
         io.to(userId).emit("connectToRoom", "You are connected")
+        // console.log(socket.rooms)
     });
 }

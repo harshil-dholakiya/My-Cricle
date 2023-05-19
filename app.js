@@ -118,9 +118,10 @@ const hbs = exphbs.create({
         return options.inverse(this);
       }
 
-    }
-  }
+    },
+  },
 });
+
 
 app.use(cookieSession({
   secret: "session",

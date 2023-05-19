@@ -21,7 +21,7 @@ $(document).ready(function () {
     const socket = io({ query: `userId=${loginUserId}` });
 
     socket.on('connectToRoom', function (data) {
-        console.log(data, `${loginUserId}`);
+        console.log(`${loginUserId}`,data);
     });
 
     socket.on('newNotification', function (data) {
@@ -34,6 +34,7 @@ $(document).ready(function () {
             $(`#${key}`).parents('.card-body').find(".savedPostCountClass").html(value)
         }
     });
+    
 
     socket.on('notificationCount', function (data) {
         data = JSON.parse(data);

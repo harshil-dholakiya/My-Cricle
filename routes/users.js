@@ -452,10 +452,55 @@ router.put('/isaccepted-request/:userId/:isAccepted', async function (req, res) 
   }
 })
 
+// router.get('/chat-model', async function (req, res) {
+//   try {
+//     let allUsers = await userModel.find({ _id: { $ne: req.user._id } }).lean()
+//     allUsers[0]["loginUserId"] = req.user._id
+//     return res.send(allUsers)
+
+//   } catch (error) {
+//     console.log(error);
+//   }
+// })
+
 router.get('/chat-model', async function (req, res) {
+  console.log("req.user._id", req.user._id);
   try {
-    let allUsers = await userModel.find({ _id: { $ne: req.user._id } }).lean()
+    let allUsers = await userModel.aggregate([
+      {
+        $match: {
+          '_id': { $ne: new mongoose.Types.ObjectId(req.user._id) }
+        }
+      },
+      {
+        $lookup: {
+          from: 'chats',
+          let: {
+            userId: '$_id'
+          },
+          pipeline: [{
+            $match: {
+              $expr: {
+                $and: [{ $eq: ['$$userId', '$senderId'] }, { $eq: ['$receiverId', new mongoose.Types.ObjectId(req.user._id)] }, { $eq: ['$isSeen', false] }]
+              }
+            }
+          }],
+          as: 'chats'
+        }
+      },
+      {
+        $project: {
+          "_id": 1,
+          "firstName": 1,
+          "lastName": 1,
+          "profilePath": 1,
+          'chatCount': { $size: '$chats' }
+        }
+      }
+    ])
+
     allUsers[0]["loginUserId"] = req.user._id
+    console.log('allUsers', allUsers);
     return res.send(allUsers)
 
   } catch (error) {

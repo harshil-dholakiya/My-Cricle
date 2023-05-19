@@ -19,6 +19,10 @@ let chatModel = function () {
         receiverId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "users"
+        },
+        isSeen:{
+            type : Boolean,
+            default : false
         }
     }, options)
     return mongoose.model("chats", chatSchema);
