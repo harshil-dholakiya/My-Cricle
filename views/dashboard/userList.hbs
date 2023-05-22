@@ -49,13 +49,12 @@
                             </a>
                         </div>
                     </div>
-
-                    {{!-- --}}
                 </div>
             </div>
             <div class="container-fluid bodyDiv mt-3">
                 {{> userList}}
             </div>
+
             <footer class="footer footer-transparent d-print-none">
                 <div class="container-xl">
                     <div class="row text-center align-items-center flex-row-reverse">
@@ -102,6 +101,25 @@
                 </div>
             </footer>
         </div>
+
+        {{!-- Chats Model --}}
+        <div class="modal modal-blur fade" id="modal-chat" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-full-width modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Chats</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            {{> chats}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        
 </body>
 
 </html>

@@ -38,7 +38,7 @@
             </div>
             {{#if userDetails}}
             <div class="col-auto ms-auto d-print-none d-flex">
-              <a href="" class="btn btn-primary d-none d-sm-inline-block me-3" data-bs-toggle="modal" id="chat">
+              {{!-- <a href="" class="btn btn-primary d-none d-sm-inline-block me-3" data-bs-toggle="modal" id="chat">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-message-chatbot" width="24"
                   height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                   stroke-linecap="round" stroke-linejoin="round">
@@ -48,7 +48,7 @@
                   <path d="M14.5 9h.01"></path>
                   <path d="M9.5 13a3.5 3.5 0 0 0 5 0"></path>
                 </svg>Chat
-              </a>
+              </a> --}}
 
               <select class="form-select sort" aria-label="Default select example" style="margin-right: 20px;">
                 <option selected value="">Sort By</option>
@@ -92,6 +92,18 @@
                   </svg>
                   Users
                 </a>
+                {{!-- <a href="javascript:void(0)" class="btn sort" data-sort="title" id="users">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users" width="20"
+                    height="10" viewBox="0 0 20 22" stroke-width="2" stroke="currentColor" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
+                    <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path>
+                  </svg>
+                  Users
+                </a> --}}
               </span>
 
               <span class="d-none d-sm-inline">
@@ -135,18 +147,10 @@
       <div class="container bodyDiv">
         {{>posts}}
       </div>
-      {{!-- <div class="reportDiv"></div> --}}
     </div>
   </div>
-
   </div>
-  {{!-- <div class="container bodyDiv">
-    {{>posts}}
-  </div> --}}
   </div>
-  {{!-- </div>
-  </div>
-  </div> --}}
 
 
   {{!-- Footer --}}
@@ -320,7 +324,6 @@
         </div>
       </div>
     </div>
-    </form>
   </div>
 </body>
 

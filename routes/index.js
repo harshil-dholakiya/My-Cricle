@@ -220,8 +220,32 @@ router.get('/', async function (req, res) {
       $addFields: {
         'savedPostArray': { $size: '$savedPostArray' },
       }
+    },
+    {
+      $lookup: {
+        from: 'comments',
+        let: {
+          postId: '$_id',
+        },
+        pipeline: [{
+          $match: {
+            $expr: {
+              $eq: ['$$postId', '$postId']
+            }
+          }
+        }],
+        as: 'comment'
+      }
+    },
+    {
+      $addFields: {
+        'comment': {
+          $size: '$comment'
+        },
+      }
     }
     ];
+
     let userFilterObj = {};
     if (req.query.type == "mine") {
       userFilterObj = {
@@ -278,6 +302,7 @@ router.get('/', async function (req, res) {
     //     $unwind: "$postdata"
     //   });
     // }
+
     if (req.query.savedPost == "savedPost") {
       let savedPostIds = await savedPostModel.distinct("postId", { userId: req.user._id });
       let savedPostUserIds = await postModel.distinct("userId", { _id: { $in: savedPostIds } });
@@ -319,7 +344,33 @@ router.get('/', async function (req, res) {
             $addFields: {
               'savedPostArray': { $size: '$savedPostArray' },
             }
-          }],
+          },
+            // Comment Count ==================
+            // {
+            //   $lookup: {
+            //     from: 'comments',
+            //     let: {
+            //       postId: '$_id',
+            //     },
+            //     pipeline: [{
+            //       $match: {
+            //         $expr: {
+            //           $eq: ['$$postId', '$postId']
+            //         }
+            //       }
+            //     }],
+            //     as: 'comment'
+            //   }
+            // },
+            // {
+            //   $addFields: {
+            //     'comment': {
+            //       $size: '$comment'
+            //     },
+            //   }
+            // }
+            // ===================
+          ],
           as: 'postdata'
         }
       }, {
@@ -328,9 +379,6 @@ router.get('/', async function (req, res) {
     }
     else {
       aggregateQuery.push(
-        // {
-        //   $match: { 'accountType': "public" }
-        // },
         {
           $lookup: {
             from: "posts",
@@ -397,7 +445,10 @@ router.get('/', async function (req, res) {
           'postdata.createdOn': 1,
           'postOrder': {
             $size: '$postdata'
-          }
+          },
+          // ===
+          'postdata.comment': 1
+
         }
       },
       {
@@ -439,7 +490,9 @@ router.get('/', async function (req, res) {
           'postdata.createdOn': 1,
           'postOrder': {
             $size: '$postdata'
-          }
+          },
+          // ===
+          'postdata.comment': 1
         }
       },
       {

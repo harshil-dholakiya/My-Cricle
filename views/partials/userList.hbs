@@ -12,8 +12,8 @@
                 {{#compare ../userDetails._id "!=" _id }}
                 {{!-- {{log requestOfLoginUser.reqStatus}} --}}
                 <div class="btn btn-primary badge bg-blue-lt followBtn" {{#compare
-                    requestOfLoginUser.reqStatus "==" 'pending' }}data-title="rejected"{{else}}data-title="sent"{{/compare}}
-                    id="{{../userDetails._id}}{{_id}}" data-user-id="{{_id}}">
+                    requestOfLoginUser.reqStatus "==" 'pending' }}data-title="rejected" {{else}}data-title="sent"
+                    {{/compare}} id="{{../userDetails._id}}{{_id}}" data-user-id="{{_id}}">
                     {{#if requestOfLoginUser.reqStatus}}{{requestOfLoginUser.reqStatus}}
                     {{else}}Follow{{/if}}
                 </div>
@@ -101,3 +101,20 @@
         </div>
     </div>
 </div>
+
+{{!-- Chats Model
+<div class="modal modal-blur fade" id="modal-chat" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full-width modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chats</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    {{> chats}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div> --}}

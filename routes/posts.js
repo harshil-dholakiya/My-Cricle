@@ -140,6 +140,7 @@ router.put('/savePost', async function (req, res) {
             // ])
 
             // postOwner UserId
+
             let postUserId = await postModel.findOne({ _id: postId }, { userId: 1 })
             // who liked the post
             // userId = req.user._id
@@ -244,18 +245,6 @@ router.put('/savePost', async function (req, res) {
     }
 })
 
-// // notification isSeen Update
-// router.put('/get-post-data/:postId', async function (req, res) {
-//     try {
-//         let postData = await postModel.findOne({ _id: req.params.postId }).lean()
-//         await notificationModel.updateOne({ postId: req.params.postId, isSeen: false }, { $set: { isSeen: true } })
-//         return res.send(postData)
-
-//     } catch (error) {
-//         console.log(error);
-//     }
-// })
-
 router.put('/archivePost', async function (req, res) {
     try {
         let query = { isArchive: false }
@@ -281,6 +270,7 @@ router.get('/', async function (req, res) {
     }
 })
 
+// Edit post
 router.put('/postId', async function (req, res, next) {
     try {
         let maxSize = 2000000;
@@ -329,33 +319,6 @@ router.put('/postId', async function (req, res, next) {
 })
 
 router.get('/get-notification', async function (req, res) {
-    // let allNotification = await notificationModel.aggregate([
-    //     {
-    //         $match: {
-    //         'postOwnerId': new mongoose.Types.ObjectId(req.user._id)
-    //         }
-    //     },
-    //     {
-    //         $lookup: {
-    //             from: 'users',
-    //             localField: 'likedBy',
-    //             foreignField: '_id',
-    //             as: 'userDetails'
-    //         }
-    //     },
-    //     {
-    //         $sort: { 'createdOn': -1 }
-    //     },
-    //     {
-    //         $unwind: '$userDetails'
-    //     },
-    //     {
-    //         $replaceRoot: {
-    //             newRoot: "$userDetails"
-    //         }
-    //     }
-    // ])
-
     let allNotification = await notificationModel.aggregate([
         {
             $match: {
@@ -382,7 +345,7 @@ router.get('/get-notification', async function (req, res) {
         //             }
         //         }
     ])
-    // console.log(allNotification);
+    
     return res.render('dashboard/allNotifications', {
         title: "All Notifications",
         allNotification: allNotification

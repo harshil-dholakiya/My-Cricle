@@ -7,11 +7,6 @@ $(document).ready(function () {
             lastName: {
                 required: true
             },
-            // email: {
-            //     required: true,
-            //     email: true,
-            //     remote: "/check-email"
-            // },
             gender: {
                 required: true,
             }

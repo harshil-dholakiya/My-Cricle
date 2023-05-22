@@ -18,5 +18,17 @@ $(document).off('keyup', '#searchBarValue').on('keyup', '#searchBarValue', funct
     }
 });
 
-
-// userSearchBarValue
+// $(document).off('click', '#users').on('click', '#users', function () {
+//     console.log("clicked on users");
+//     $this = $(this)
+//     $.ajax({
+//         type: "GET",
+//         url: `/users/userList`,
+//         success: function (data) {
+//             $(".bodyDiv").html(data)
+//         },
+//         error: function (data) {
+//             alert("Error from UserSearch")
+//         }
+//     })
+// });

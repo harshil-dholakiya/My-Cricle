@@ -1,3 +1,7 @@
+socket.on('newCommentAdded', function (data) {
+    data = JSON.parse(data);
+    $(`#${data.postId}`).find('.commentCountClass').html(data.commentCounts)
+});
 $(document).ready(function () {
     $('#commentForm').validate({
         rules: {

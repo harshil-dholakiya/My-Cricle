@@ -28,15 +28,6 @@ $(document).off('change', '.sort').on('change', '.sort', function () {
     })
 });
 
-// $(window).scroll(function() {
-//     console.log("==========");
-//     console.log($(window).scrollTop());
-//     console.log($(window).height());
-//     console.log($(document).height());
-//     if($(window).scrollTop() + $(window).height() + 1 > $(document).height()) {
-//         alert("bottom!");
-//     }
-//  });
 
 $(document).off('click', '#dateSort').on('click', '#dateSort', function () {
     let dateSort = $("#dateSort").data('id')
@@ -46,10 +37,13 @@ $(document).off('click', '#dateSort').on('click', '#dateSort', function () {
         type: "GET",
         url: `/users/userList/?sortByDate=${dateSort}&sortOrder=${sortOrder}`,
         success: function (data) {
-            // $(".bodyDiv").empty()
+            console.log(data);
+            console.log("$this.data('sort-order')",$this.data('sort-order'));
             $(".bodyDiv").html(data)
-            let newSortOrder = (sortOrder == "1") ? "-1" : "1";
-            $this.data('sort-order', newSortOrder)
+            let newSortOrder = (sortOrder == 1) ? -1 : 1;
+            console.log("$this.data('sort-order', newSortOrder)",$this.data('sort-order',newSortOrder))
+            console.log("newSortOrder",newSortOrder);
+            
         },
         error: function (data) {
             alert("Error from on click")

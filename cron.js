@@ -8,10 +8,10 @@ const { create } = require('hbs');
 const moment = require('moment');
 
 async function aggregateCron(userIds) {
-    /**function for login user
+    /* function for login user
          * @param {ObjectId} userId  takes an userId 
          * @return {Object} return totalSavedPost, totalPostOfUser, how much post he saved 
-         */
+    */
     var statisticsData = await userModel.aggregate([
         {
             $match: {

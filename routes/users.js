@@ -268,7 +268,7 @@ router.get('/userList', async function (req, res) {
         let notificationCount = notificationData.length
 
         io.to(req.user._id.toString()).emit("notificationCount", JSON.stringify(notificationData))
-        res.render('dashboard/userList', {
+        return res.render('dashboard/userList', {
           title: "All User List",
           userData: userData,
           notificationCount: notificationCount,
@@ -348,11 +348,27 @@ router.get('/comments/:postId', async function (req, res) {
   }
 })
 
+
+async function getCommentCount(postId, res) {
+  /* function That take req as a postId
+         * @param {req} Type : ObjectId
+         * @param {res} yet we are not using   
+         * @return {Object} return Object with postId and count of comments of particular post  
+  */
+  let commentCounts = await commentModel.countDocuments({ postId: postId })
+  let objToEmit = { postId: postId, commentCounts: commentCounts }
+  return objToEmit
+}
+
 // Add comment
 router.post('/comments/:postId', async function (req, res) {
   try {
     let { commentMessage } = req.body
     await commentModel.create({ message: commentMessage, postId: req.params.postId, commentBy: req.user._id })
+    let commentCount = await getCommentCount(req.params.postId, res)
+    // console.log('commentCount',commentCount);
+    io.emit("newCommentAdded", JSON.stringify(commentCount))
+
     return res.send({ type: "success" })
   } catch (error) {
     console.log(error);
@@ -364,6 +380,9 @@ router.post('/comments/:postId', async function (req, res) {
 router.delete('/delete-comment/:postId', async function (req, res) {
   try {
     await commentModel.deleteOne({ postId: new mongoose.Types.ObjectId(req.params.postId), commentBy: new mongoose.Types.ObjectId(req.user._id) })
+
+    let commentCount = await getCommentCount(req.params.postId, res)
+    io.emit("newCommentAdded", JSON.stringify(commentCount))
     return res.send({ type: "success" })
   } catch (error) {
     console.log(error);
@@ -396,6 +415,7 @@ router.post('/request/:userId', async function (req, res) {
   }
 })
 
+// All Request Listing
 router.get('/get-requests/:userId', async function (req, res) {
   try {
     let allRequest = await requestModel.aggregate([
@@ -430,6 +450,7 @@ router.get('/get-requests/:userId', async function (req, res) {
   }
 })
 
+// request isaccepted or not
 router.put('/isaccepted-request/:userId/:isAccepted', async function (req, res) {
   try {
     var isRequestAccepted = await requestModel.updateMany({ requestBy: new mongoose.Types.ObjectId(req.params.userId), receviedRequestUser: new mongoose.Types.ObjectId(req.user._id) }, { $set: { reqStatus: req.params.isAccepted } })
@@ -452,64 +473,102 @@ router.put('/isaccepted-request/:userId/:isAccepted', async function (req, res) 
   }
 })
 
-// router.get('/chat-model', async function (req, res) {
-//   try {
-//     let allUsers = await userModel.find({ _id: { $ne: req.user._id } }).lean()
-//     allUsers[0]["loginUserId"] = req.user._id
-//     return res.send(allUsers)
-
-//   } catch (error) {
-//     console.log(error);
-//   }
-// })
-
-router.get('/chat-model', async function (req, res) {
-  console.log("req.user._id", req.user._id);
-  try {
-    let allUsers = await userModel.aggregate([
-      {
-        $match: {
-          '_id': { $ne: new mongoose.Types.ObjectId(req.user._id) }
-        }
-      },
-      {
-        $lookup: {
-          from: 'chats',
-          let: {
-            userId: '$_id'
-          },
-          pipeline: [{
-            $match: {
-              $expr: {
-                $and: [{ $eq: ['$$userId', '$senderId'] }, { $eq: ['$receiverId', new mongoose.Types.ObjectId(req.user._id)] }, { $eq: ['$isSeen', false] }]
-              }
-            }
-          }],
-          as: 'chats'
-        }
-      },
-      {
-        $project: {
-          "_id": 1,
-          "firstName": 1,
-          "lastName": 1,
-          "profilePath": 1,
-          'chatCount': { $size: '$chats' }
-        }
+async function allUsers(req, res) {
+  /* function for All userListing when open chat modal
+         * @param {req}
+         * @param {req}  
+         * @return {array of Object} return allusers Details with unseenMessage count 
+  */
+  let allUsers = await userModel.aggregate([
+    {
+      $match: {
+        '_id': { $ne: new mongoose.Types.ObjectId(req.user._id) }
       }
-    ])
+    },
+    {
+      $lookup: {
+        from: 'chats',
+        let: {
+          userId: '$_id'
+        },
+        pipeline: [{
+          $match: {
+            $expr: {
+              $and: [{ $eq: ['$$userId', '$senderId'] }, { $eq: ['$receiverId', new mongoose.Types.ObjectId(req.user._id)] }, { $eq: ['$isSeen', false] }] // userListing when open the chat modal and show the count of message that he has nit seen yet. 
+            }
+          }
+        }],
+        as: 'chats'
+      }
+    },
+    {
+      $project: {
+        "_id": 1,
+        "firstName": 1,
+        "lastName": 1,
+        "profilePath": 1,
+        'chatCount': { $size: '$chats' }
+      }
+    }
+  ])
+  return allUsers
+}
 
-    allUsers[0]["loginUserId"] = req.user._id
-    console.log('allUsers', allUsers);
-    return res.send(allUsers)
+// userListing when user open the chat model with unseen message count
+router.get('/chat-model', async function (req, res) {
+  try {
+    // let allUsers = await userModel.aggregate([
+    //   {
+    //     $match: {
+    //       '_id': { $ne: req.user._id }
+    //     }
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: 'chats',
+    //       let: {
+    //         userId: '$_id'
+    //       },
+    //       pipeline: [{
+    //         $match: {
+    //           $expr: {
+    //             $and: [{ $eq: ['$$userId', '$senderId'] }, { $eq: ['$receiverId', new mongoose.Types.ObjectId(req.user._id)] }, { $eq: ['$isSeen', false] }] // userListing when open the chat modal and show the count of message that he has nit seen yet. 
+    //           }
+    //         }
+    //       }],
+    //       as: 'chats'
+    //     }
+    //   },
+    //   {
+    //     $project: {
+    //       "_id": 1,
+    //       "firstName": 1,
+    //       "lastName": 1,
+    //       "profilePath": 1,
+    //       'chatCount': { $size: '$chats' }
+    //     }
+    //   }
+    // ])
+
+    let allUsersDetails = await allUsers(req, res)
+    allUsersDetails[0]["loginUserId"] = req.user._id
+    console.log(allUsersDetails);
+    return res.send(allUsersDetails)
+
+    // allUsers[0]["loginUserId"] = req.user._id
+    // console.log('allUsers', allUsers);
+    // return res.send(allUsers)
 
   } catch (error) {
     console.log(error);
   }
 })
 
+// get all the chats of the login user
 router.get('/chat/:userId', async function (req, res) {
   try {
+    await chatModel.updateMany({ receiverId: new mongoose.Types.ObjectId(req.user._id), senderId: new mongoose.Types.ObjectId(req.params.userId) }, { $set: { 'isSeen': true } }) // update meesage unSeen to Seen  
+
     let chatMessages = await chatModel.aggregate([{
       $match: {
         $or: [{
@@ -529,6 +588,7 @@ router.get('/chat/:userId', async function (req, res) {
       }
     }
     ])
+
     return res.send(chatMessages)
 
   } catch (error) {
@@ -536,9 +596,12 @@ router.get('/chat/:userId', async function (req, res) {
   }
 })
 
+// create Message and store into database
 router.post('/userChat/:userId', async function (req, res) {
+  // req.params.userId = Message receiverId
+  // req.user._id = Message senderId
+  // chatMessage = req.body.chatMessage
   let createMessage = await chatModel.create({ chatMessage: req.body.chatMessage, receiverId: req.params.userId, senderId: req.user._id })
-
   io.to(req.params.userId.toString()).emit("newMessage", createMessage)
   return res.send(createMessage)
 })
