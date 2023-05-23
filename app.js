@@ -48,6 +48,7 @@ const hbs = exphbs.create({
       return mmnt;
     },
     inArray: function (array, value, options) {
+      // console.log(value);
       array = array.map(val => {
         if (typeof val == "object") {
           val = val.toString()

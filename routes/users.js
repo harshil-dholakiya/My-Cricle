@@ -552,7 +552,6 @@ router.get('/chat-model', async function (req, res) {
 
     let allUsersDetails = await allUsers(req, res)
     allUsersDetails[0]["loginUserId"] = req.user._id
-    console.log(allUsersDetails);
     return res.send(allUsersDetails)
 
     // allUsers[0]["loginUserId"] = req.user._id

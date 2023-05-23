@@ -39,7 +39,6 @@
                                     </a>
                                     {{else}}
                                     {{#compare ../_id "!=" ../../userDetails._id }}
-
                                     <a href="javascript:void(0)" class="text-muted" data-title="Save"
                                         style="text-decoration: none;">
                                         <div class="savedPostDiv save-post" data-id="{{_id}}">
@@ -55,7 +54,6 @@
                                             <p class="ms-1 savedPostCountClass">{{savedPostArray}}</p>
                                         </div>
                                     </a>
-
                                     {{/compare}}
                                     {{/inArray}}
 
@@ -72,7 +70,8 @@
                                                     d="M3 20l1.3 -3.9c-2.324 -3.437 -1.426 -7.872 2.1 -10.374c3.526 -2.501 8.59 -2.296 11.845 .48c3.255 2.777 3.695 7.266 1.029 10.501c-2.666 3.235 -7.615 4.215 -11.574 2.293l-4.7 1">
                                                 </path>
                                             </svg>
-                                            <p class="ms-3 commentCountClass" data-comment-post-id="{{_id}}">{{comment}}</p>
+                                            <p class="ms-3 commentCountClass" data-comment-post-id="{{_id}}">{{comment}}
+                                            </p>
                                         </div>
                                     </a>
 
@@ -80,22 +79,22 @@
 
                                     {{#compare ../_id "===" ../../userDetails._id }}
 
-                                   <a href="javascript:void(0)" class="text-muted disabled"
-                                            data-title="Save" style="text-decoration: none;">
-                                            <div class="disable-links" data-id="{{_id}}">
-                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                    class="icon icon-tabler icon-tabler-heart" width="24" height="24"
-                                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                    <path
-                                                        d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572">
-                                                    </path>
-                                                </svg>
-                                                <p class="ms-1 savedPostCountClass">{{savedPostArray}}</p>
-                                            </div>
-                                        </a>
-                                    
+                                    <a href="javascript:void(0)" class="text-muted disabled" data-title="Save"
+                                        style="text-decoration: none;">
+                                        <div class="disable-links" data-id="{{_id}}">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-heart" width="24" height="24"
+                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path
+                                                    d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572">
+                                                </path>
+                                            </svg>
+                                            <p class="ms-1 savedPostCountClass">{{savedPostArray}}</p>
+                                        </div>
+                                    </a>
+
                                     <div class="nav-item dropdown ms-1">
                                         <a href="#" class="nav-link d-flex lh-1 text-reset p-0"
                                             data-bs-toggle="dropdown" aria-label="Open user menu">
@@ -257,25 +256,26 @@
 
 {{!-- Show notification liked Post --}}
 <div class="modal modal-blur fade" id="modal-showPost" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg has-error" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Liked Post</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-lg has-error" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Liked Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="showPostImageDiv mb-4">
+                    <img src="" alt="Post-Image" id="notificationPostPhoto" width="50%" height="300px"
+                        style="margin-left : 155px">
                 </div>
-                <div class="modal-body">
-                    <div class="showPostImageDiv mb-4">
-                        <img src="" alt="Post-Image" id="notificationPostPhoto" width="50%" height="300px" style="margin-left : 155px">
-                    </div>
-                    <div class="title">
-                        Title <p id="notificationTitle"></p>
-                    </div>
-                    <div class="description">
-                        Description <p class="overflow-auto" id="notificationDescription"></p>
-                    </div>
+                <div class="title">
+                    Title <p id="notificationTitle"></p>
+                </div>
+                <div class="description">
+                    Description <p class="overflow-auto" id="notificationDescription"></p>
                 </div>
             </div>
         </div>
+    </div>
 </div>
 
 {{!-- Delete comment cofrim Model --}}
