@@ -193,20 +193,29 @@ router.get('/userList', async function (req, res) {
     //   {
     //     $limit: limit
     //   })
-    queryArray.push({
-      $lookup: {
-        from: 'posts',
-        localField: '_id',
-        foreignField: 'userId',
-        as: 'postCreatedByUser'
-      }
-    },
+    queryArray.push(
+      {
+        $lookup: {
+          from: 'posts',
+          let: { userId: "$_id" },
+          pipeline: [{
+            $match: {
+              $expr: { $and: [{ $eq: ['$$userId', '$userId'] }, { $eq: ['$isArchive', false] }] }
+            }
+          }],
+          as: 'postCreatedByUser'
+        }
+      },
       {
         $lookup: {
           from: 'savedPost',
-          localField: '_id',
-          foreignField: 'userId',
-          as: "savedPost"
+          let: { userId: "$_id" },
+          pipeline: [{
+            $match: {
+              $expr: { $eq: ['$$userId', '$userId'] }
+            }
+          }],
+          as: 'savedPost'
         }
       },
       {
@@ -603,6 +612,23 @@ router.post('/userChat/:userId', async function (req, res) {
   let createMessage = await chatModel.create({ chatMessage: req.body.chatMessage, receiverId: req.params.userId, senderId: req.user._id })
   io.to(req.params.userId.toString()).emit("newMessage", createMessage)
   return res.send(createMessage)
+})
+
+// getUsers
+router.get('/getUsers', async function (req, res) {
+  let getUsersForCreateGroup = await userModel.find({ '_id': { $ne: new mongoose.Types.ObjectId(req.user._id) } })
+  res.send(getUsersForCreateGroup)
+})
+
+router.post('/createGroup', async function (req, res) {
+  let userIds = JSON.parse(req.body.userIds)
+  let userIdsConverToObjectId = []
+  for (let i = 0; i < userIds.length; i++) {
+    userIdsConverToObjectId.push(new mongoose.Types.ObjectId(userIds[i]))
+  }
+  let groupName = req.body.groupName
+  
+  res.send('ok')
 })
 
 module.exports = router;
