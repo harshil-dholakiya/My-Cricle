@@ -1,3 +1,20 @@
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": false,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "1000",
+    "hideDuration": "1000",
+    "timeOut": "1000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+}
 socket.on('newMessage', function (data) {
     let id = $('#chatMessage').data('id')
     if (data.senderId == id) {
@@ -40,13 +57,77 @@ $(document).off('click', '#chat').on('click', '#chat', function () {
                   </div>
                 </div>`
             }
+
+            let groupData = ``;
+            for (let i = 0; i < allUsers.length; i++) {
+                for (let j = i; j < allUsers[i].group.length; j++) {
+                    groupData += `<div class="card mb-2 GroupChat" style="height:60px;width:285px;" id=${allUsers[i].group[j]._id}>
+                    <div class="row row-0">
+                    <div class="col-2">
+                    <img class="groupProfilePhoto" src="logo.png" style="height:50px;border-radius:25px;width:50px;margin:4px 0px 3px 3px">
+                    </div>
+                    <div class="col">
+                    <div class="card-body d-flex" style="padding-left:12px">
+                    <div class="col-8 card-title groupName">${allUsers[i].group[j].groupName}</div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>`
+                }
+            }
+            
+            // console.log(allUsers[i].group[j].memberId)
+            // for (let k = 0; k < allUsers[i].group[j].memberId.length; k++) {
+            //     var userIdsOfGroupMembers = allUsers[i].group[j].memberId[k]
+            // }
             $('.allUsers').html(htmlData);
-            $('#modal-chat').modal('toggle')
-            let userId = $('#chatMessage').data('id')
-            $('#chatMessage').parents('.chatDiv').siblings('.userListDiv').find(`.active-${userId}`).next('.unSeenMessageCount').removeClass('badge bg-primary').html('')
+            $('.allUsers').append(groupData);
+            $('#modal-chat').modal('toggle');
+            let userId = $('#chatMessage').data('id');
+            $('#chatMessage').parents('.chatDiv').siblings('.userListDiv').find(`.active-${userId}`).next('.unSeenMessageCount').removeClass('badge bg-primary').html('');
         },
         error: function (data) {
             alert("Error from get #chats")
+        }
+    })
+})
+
+//Group Chat
+$(document).off('click', '.GroupChat').on('click', '.GroupChat', function () {
+    $groupName = $(this).find('.groupName').html()
+    let groupId = $(this).attr('id')
+    console.log(groupId);
+    $GroupProfilePhoto = $(this).find('.groupProfilePhoto').attr('src')
+    $.ajax({
+        type: "get",
+        url: `/users/Groupchat/${groupId}`,
+        success: function (data) {
+            $('.userProfilePhoto').html(`
+            <img src='${$GroupProfilePhoto}' alt="GroupProfilePhoto" style="border-radius:250px; width:50px; height:50px">
+            <span class="card-title mt-2 ms-2">${$groupName}</span>
+            `)
+
+            $('.messageDiv').html(`
+            <div id="chatMessage" class="overflow-auto mt-2" style="max-height: 445px;">
+            </div>
+            <div class="mb-3 row">
+            <div class="col-sm-11">
+                 <input type="text" class="position-absolute bottom-0 mb-2 form-control text-red" id="inputMessage" placeholder="Type message..." style="width:1380px; border:none;border-radius:10px; box-shadow:10px 5px 5px grey">
+                    <a href="javascript:void(0)" id="groupMessageSendBtn" data-receiver-id= data-login-user="" class="btn btn-primary me-3 rounded-pill position-absolute bottom-0 end-0 mb-2 px-4" >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-send ms-1" width="24"
+                        height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M10 14l11 -11"></path>
+                        <path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5">
+                        </path>
+                        </svg>
+                    </a>
+            </div>
+            </div>`)
+        },
+        error: function (data) {
+            alert("Error from .GroupChat")
         }
     })
 })
@@ -143,7 +224,6 @@ $(document).off('click', '.modal-group').on('click', '.modal-group', function ()
         type: "get",
         url: `/users/getUsers`,
         success: function (getUsersForCreateGroup) {
-            // console.log(getUsersForCreateGroup);
             let htmlData = ``;
             for (let i = 0; i < getUsersForCreateGroup.length; i++) {
                 htmlData += `
@@ -161,8 +241,9 @@ $(document).off('click', '.modal-group').on('click', '.modal-group', function ()
                   </div>
                 </div>`
             }
-            $('.createGroupUsers').html(htmlData);
 
+
+            $('.createGroupUsers').html(htmlData);
         },
         error: function (data) {
             alert("Error from Group Chat Model")
@@ -171,7 +252,6 @@ $(document).off('click', '.modal-group').on('click', '.modal-group', function ()
 })
 
 $(document).off('click', '#createGroupBtn').on('click', '#createGroupBtn', function () {
-    // console.log("#createGroupBtn");
     let groupName = $('#groupName').val()
     groupName.trim()
 
@@ -184,13 +264,14 @@ $(document).off('click', '#createGroupBtn').on('click', '#createGroupBtn', funct
         $.ajax({
             type: "post",
             url: `/users/createGroup`,
-            
             data: {
                 "userIds": JSON.stringify(userIds),
                 "groupName": groupName
             },
             success: function (data) {
-                console.log('ok');
+                // console.log(data);
+                // $('.allUsers').append(data)
+                toastr.success(`Group created!`);
             },
             error: function (data) {
                 alert("Error from #createGroupBtn")

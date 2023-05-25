@@ -11,6 +11,8 @@ const path = require('path');
 const { log } = require('handlebars/runtime');
 const requestModel = require('../models/requests');
 const chatModel = require('../models/chats');
+const groupChatModel = require('../models/group-chat');
+
 const { title } = require('process');
 
 /* GET users listing. */
@@ -488,6 +490,39 @@ async function allUsers(req, res) {
          * @param {req}  
          * @return {array of Object} return allusers Details with unseenMessage count 
   */
+  // let allUsers = await userModel.aggregate([
+  //   {
+  //     $match: {
+  //       '_id': { $ne: new mongoose.Types.ObjectId(req.user._id) }
+  //     }
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: 'chats',
+  //       let: {
+  //         userId: '$_id'
+  //       },
+  //       pipeline: [{
+  //         $match: {
+  //           $expr: {
+  //             $and: [{ $eq: ['$$userId', '$senderId'] }, { $eq: ['$receiverId', new mongoose.Types.ObjectId(req.user._id)] }, { $eq: ['$isSeen', false] }] // userListing when open the chat modal and show the count of message that he has nit seen yet. 
+  //           }
+  //         }
+  //       }],
+  //       as: 'chats'
+  //     }
+  //   },
+  //   {
+  //     $project: {
+  //       "_id": 1,
+  //       "firstName": 1,
+  //       "lastName": 1,
+  //       "profilePath": 1,
+  //       'chatCount': { $size: '$chats' }
+  //     }
+  //   }
+  // ])
+
   let allUsers = await userModel.aggregate([
     {
       $match: {
@@ -503,11 +538,28 @@ async function allUsers(req, res) {
         pipeline: [{
           $match: {
             $expr: {
-              $and: [{ $eq: ['$$userId', '$senderId'] }, { $eq: ['$receiverId', new mongoose.Types.ObjectId(req.user._id)] }, { $eq: ['$isSeen', false] }] // userListing when open the chat modal and show the count of message that he has nit seen yet. 
+              $and: [{ $eq: ['$$userId', '$senderId'] }, { $eq: ['$receiverId', new mongoose.Types.ObjectId(req.user._id)] }, { $eq: ['$isSeen', false] }]
             }
           }
         }],
         as: 'chats'
+      }
+    },
+    {
+      $lookup: {
+        from: 'groupChat',
+        let: { userId: '$_id' },
+        pipeline: [{
+          $match: {
+            $expr: {
+              $and: [{
+                $or: [{ $in: ['$$userId', '$memberId'] }]
+              },
+              { $in: [new mongoose.Types.ObjectId(req.user._id), '$memberId'] }]
+            }
+          }
+        }],
+        as: 'group'
       }
     },
     {
@@ -516,56 +568,24 @@ async function allUsers(req, res) {
         "firstName": 1,
         "lastName": 1,
         "profilePath": 1,
-        'chatCount': { $size: '$chats' }
+        'chatCount': { $size: '$chats' },
+        'group': 1
       }
     }
   ])
+
   return allUsers
 }
 
 // userListing when user open the chat model with unseen message count
 router.get('/chat-model', async function (req, res) {
   try {
-    // let allUsers = await userModel.aggregate([
-    //   {
-    //     $match: {
-    //       '_id': { $ne: req.user._id }
-    //     }
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: 'chats',
-    //       let: {
-    //         userId: '$_id'
-    //       },
-    //       pipeline: [{
-    //         $match: {
-    //           $expr: {
-    //             $and: [{ $eq: ['$$userId', '$senderId'] }, { $eq: ['$receiverId', new mongoose.Types.ObjectId(req.user._id)] }, { $eq: ['$isSeen', false] }] // userListing when open the chat modal and show the count of message that he has nit seen yet. 
-    //           }
-    //         }
-    //       }],
-    //       as: 'chats'
-    //     }
-    //   },
-    //   {
-    //     $project: {
-    //       "_id": 1,
-    //       "firstName": 1,
-    //       "lastName": 1,
-    //       "profilePath": 1,
-    //       'chatCount': { $size: '$chats' }
-    //     }
-    //   }
-    // ])
 
     let allUsersDetails = await allUsers(req, res)
-    allUsersDetails[0]["loginUserId"] = req.user._id
-    return res.send(allUsersDetails)
 
-    // allUsers[0]["loginUserId"] = req.user._id
-    // console.log('allUsers', allUsers);
-    // return res.send(allUsers)
+    allUsersDetails[0]["loginUserId"] = req.user._id
+    // console.log("allUsersDetails", allUsersDetails);
+    return res.send(allUsersDetails)
 
   } catch (error) {
     console.log(error);
@@ -620,15 +640,23 @@ router.get('/getUsers', async function (req, res) {
   res.send(getUsersForCreateGroup)
 })
 
+// Create Group and store it in database. 
 router.post('/createGroup', async function (req, res) {
   let userIds = JSON.parse(req.body.userIds)
   let userIdsConverToObjectId = []
   for (let i = 0; i < userIds.length; i++) {
     userIdsConverToObjectId.push(new mongoose.Types.ObjectId(userIds[i]))
   }
+  userIdsConverToObjectId.push(new mongoose.Types.ObjectId(req.user._id))
   let groupName = req.body.groupName
-  
-  res.send('ok')
+  let createGroup = await groupChatModel.create({ groupName: groupName, memberId: userIdsConverToObjectId, createdBy: req.user._id })
+  //Create Room here with group Id (Tommorow)
+  res.send(groupName)
+})
+
+router.get('/groupchat/:groupId', async function (req, res) {
+
+res.send('ok')
 })
 
 module.exports = router;

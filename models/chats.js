@@ -23,7 +23,16 @@ let chatModel = function () {
         isSeen:{
             type : Boolean,
             default : false
-        }
+        },
+        chatWith: {
+            type: String,
+            enum: ["individual", "group"],
+            default: "individual"
+        },
+        groupId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "groupChat"
+        },
     }, options)
     return mongoose.model("chats", chatSchema);
 };
