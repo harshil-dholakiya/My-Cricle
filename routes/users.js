@@ -14,6 +14,7 @@ const chatModel = require('../models/chats');
 const groupChatModel = require('../models/group-chat');
 
 const { title } = require('process');
+const { group } = require('console');
 
 /* GET users listing. */
 router.get('/editProfile', async function (req, res, next) {
@@ -490,39 +491,6 @@ async function allUsers(req, res) {
          * @param {req}  
          * @return {array of Object} return allusers Details with unseenMessage count 
   */
-  // let allUsers = await userModel.aggregate([
-  //   {
-  //     $match: {
-  //       '_id': { $ne: new mongoose.Types.ObjectId(req.user._id) }
-  //     }
-  //   },
-  //   {
-  //     $lookup: {
-  //       from: 'chats',
-  //       let: {
-  //         userId: '$_id'
-  //       },
-  //       pipeline: [{
-  //         $match: {
-  //           $expr: {
-  //             $and: [{ $eq: ['$$userId', '$senderId'] }, { $eq: ['$receiverId', new mongoose.Types.ObjectId(req.user._id)] }, { $eq: ['$isSeen', false] }] // userListing when open the chat modal and show the count of message that he has nit seen yet. 
-  //           }
-  //         }
-  //       }],
-  //       as: 'chats'
-  //     }
-  //   },
-  //   {
-  //     $project: {
-  //       "_id": 1,
-  //       "firstName": 1,
-  //       "lastName": 1,
-  //       "profilePath": 1,
-  //       'chatCount': { $size: '$chats' }
-  //     }
-  //   }
-  // ])
-
   let allUsers = await userModel.aggregate([
     {
       $match: {
@@ -538,28 +506,11 @@ async function allUsers(req, res) {
         pipeline: [{
           $match: {
             $expr: {
-              $and: [{ $eq: ['$$userId', '$senderId'] }, { $eq: ['$receiverId', new mongoose.Types.ObjectId(req.user._id)] }, { $eq: ['$isSeen', false] }]
+              $and: [{ $eq: ['$$userId', '$senderId'] }, { $eq: ['$receiverId', new mongoose.Types.ObjectId(req.user._id)] }, { $eq: ['$isSeen', false] }] // userListing when open the chat modal and show the count of message that he has nit seen yet. 
             }
           }
         }],
         as: 'chats'
-      }
-    },
-    {
-      $lookup: {
-        from: 'groupChat',
-        let: { userId: '$_id' },
-        pipeline: [{
-          $match: {
-            $expr: {
-              $and: [{
-                $or: [{ $in: ['$$userId', '$memberId'] }]
-              },
-              { $in: [new mongoose.Types.ObjectId(req.user._id), '$memberId'] }]
-            }
-          }
-        }],
-        as: 'group'
       }
     },
     {
@@ -568,23 +519,72 @@ async function allUsers(req, res) {
         "firstName": 1,
         "lastName": 1,
         "profilePath": 1,
-        'chatCount': { $size: '$chats' },
-        'group': 1
+        'chatCount': { $size: '$chats' }
       }
     }
   ])
 
-  return allUsers
+  // let allUsers = await userModel.aggregate([
+  //   {
+  //     $match: {
+  //       '_id': { $ne: new mongoose.Types.ObjectId(req.user._id) }
+  //     }
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: 'chats',
+  //       let: {
+  //         userId: '$_id'
+  //       },
+  //       pipeline: [{
+  //         $match: {
+  //           $expr: {
+  //             $and: [{ $eq: ['$$userId', '$senderId'] }, { $eq: ['$receiverId', new mongoose.Types.ObjectId(req.user._id)] }, { $eq: ['$isSeen', false] }]
+  //           }
+  //         }
+  //       }],
+  //       as: 'chats'
+  //     }
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: 'groupChat',
+  //       let: { userId: '$_id' },
+  //       pipeline: [{
+  //         $match: {
+  //           $expr: {
+  //             $and: [{
+  //               $or: [{ $in: ['$$userId', '$memberId'] }]
+  //             },{ $in : [new mongoose.Types.ObjectId(req.user._id), '$memberId'] }
+  //             ]
+  //           }
+  //         }
+  //       }],
+  //       as: 'group'
+  //     }
+  //   },
+  //   {
+  //     $project: {
+  //       "_id": 1,
+  //       "firstName": 1,
+  //       "lastName": 1,
+  //       "profilePath": 1,
+  //       'chatCount': { $size: '$chats' },
+  //       'group': 1
+  //     }
+  //   }
+  // ])
+
+  let groupDetails = await groupChatModel.find({ memberId: { $in: [new mongoose.Types.ObjectId(req.user._id)] } })
+  return { "allUsers": allUsers, "groupDetails": groupDetails }
 }
 
 // userListing when user open the chat model with unseen message count
 router.get('/chat-model', async function (req, res) {
   try {
-
     let allUsersDetails = await allUsers(req, res)
+    allUsersDetails.allUsers[0]["loginUserId"] = req.user._id
 
-    allUsersDetails[0]["loginUserId"] = req.user._id
-    // console.log("allUsersDetails", allUsersDetails);
     return res.send(allUsersDetails)
 
   } catch (error) {
@@ -625,13 +625,21 @@ router.get('/chat/:userId', async function (req, res) {
 })
 
 // create Message and store into database
-router.post('/userChat/:userId', async function (req, res) {
+router.post('/userChat/:userId?/:groupId?', async function (req, res) {
   // req.params.userId = Message receiverId
   // req.user._id = Message senderId
   // chatMessage = req.body.chatMessage
-  let createMessage = await chatModel.create({ chatMessage: req.body.chatMessage, receiverId: req.params.userId, senderId: req.user._id })
-  io.to(req.params.userId.toString()).emit("newMessage", createMessage)
-  return res.send(createMessage)
+  if (req.params.groupId) {
+    let groupCreateMessage = await chatModel.create({ chatMessage: req.body.groupChatMessage, senderId: req.user._id, chatWith: "group", groupId: req.params.groupId })
+    // io.to(req.params.groupId.toString()).emit("newMessage", groupCreateMessage)
+
+    return res.send(groupCreateMessage)
+  }
+  else {
+    let createMessage = await chatModel.create({ chatMessage: req.body.chatMessage, receiverId: req.params.userId, senderId: req.user._id })
+    io.to(req.params.userId.toString()).emit("newMessage", createMessage)
+    return res.send(createMessage)
+  }
 })
 
 // getUsers
@@ -650,13 +658,37 @@ router.post('/createGroup', async function (req, res) {
   userIdsConverToObjectId.push(new mongoose.Types.ObjectId(req.user._id))
   let groupName = req.body.groupName
   let createGroup = await groupChatModel.create({ groupName: groupName, memberId: userIdsConverToObjectId, createdBy: req.user._id })
-  //Create Room here with group Id (Tommorow)
+
+  //Create Room here with group Id
   res.send(groupName)
 })
 
 router.get('/groupchat/:groupId', async function (req, res) {
-
-res.send('ok')
+  let groupChatDetails = await chatModel.aggregate([
+    {
+      $match: {
+        'groupId': new mongoose.Types.ObjectId(req.params.groupId)
+      }
+    },
+    {
+      $lookup: {
+        from: 'users',
+        let: { userId: '$senderId' },
+        pipeline: [{
+          $match: {
+            $expr: {
+              $eq: ['$$userId', '$_id']
+            }
+          }
+        }],
+        as: "userDetails"
+      }
+    },
+    {
+      $unwind: '$userDetails'
+    }
+  ])
+  res.send(groupChatDetails)
 })
 
 module.exports = router;

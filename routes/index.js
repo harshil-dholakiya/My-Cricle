@@ -4,12 +4,12 @@ const userModel = require('../models/users')
 const postModel = require('../models/posts')
 const savedPostModel = require('../models/save-post')
 const notificationModel = require('../models/notifications');
+const groupChatModel = require('../models/group-chat');
 const md5 = require('md5');
 const passport = require('passport');
 const mongoose = require('mongoose')
 const nodemailer = require('nodemailer');
 const { use } = require('./users');
-
 
 
 router.get('/sign-in', function (req, res, next) {
@@ -345,31 +345,6 @@ router.get('/', async function (req, res) {
               'savedPostArray': { $size: '$savedPostArray' },
             }
           },
-            // Comment Count ==================
-            // {
-            //   $lookup: {
-            //     from: 'comments',
-            //     let: {
-            //       postId: '$_id',
-            //     },
-            //     pipeline: [{
-            //       $match: {
-            //         $expr: {
-            //           $eq: ['$$postId', '$postId']
-            //         }
-            //       }
-            //     }],
-            //     as: 'comment'
-            //   }
-            // },
-            // {
-            //   $addFields: {
-            //     'comment': {
-            //       $size: '$comment'
-            //     },
-            //   }
-            // }
-            // ===================
           ],
           as: 'postdata'
         }
@@ -446,9 +421,7 @@ router.get('/', async function (req, res) {
           'postOrder': {
             $size: '$postdata'
           },
-          // ===
           'postdata.comment': 1
-
         }
       },
       {
@@ -491,7 +464,6 @@ router.get('/', async function (req, res) {
           'postOrder': {
             $size: '$postdata'
           },
-          // ===
           'postdata.comment': 1
         }
       },
@@ -508,11 +480,15 @@ router.get('/', async function (req, res) {
     // Final Query
     let postData = await userModel.aggregate(aggregateQuery);
 
+    let groupDetails = await groupChatModel.find({ memberId: { $in: [new mongoose.Types.ObjectId(req.user._id)] } })
+    let groupId = groupDetails.map((groupid) => groupid._id)
+    console.log(groupId);
     if (req.xhr) {
       return res.render('partials/posts', {
         title: 'My Cricle',
         postData: postData,
         savedPost: savedPost,
+        groupIds: groupId,
         pages: pages
       })
     }
@@ -534,6 +510,7 @@ router.get('/', async function (req, res) {
         notificationData: notificationData,
         notificationCount: notificationCount,
         savedPost: savedPost,
+        groupIds: groupId,
         pages: pages
       })
     }

@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
     var valueOfPassword = $("#password").val();
 
     $.validator.addMethod("checklower", function (valueOfPassword) {
@@ -13,8 +12,6 @@ $(document).ready(function () {
     });
     $.validator.addMethod("checkSpeicalChar", function (valueOfPassword) {
         let val = /(?=.*[!@#$%^&*])/.test(valueOfPassword);
-        console.log("val", val);
-        console.log("valueOfPassword", valueOfPassword);
         return val
     });
 

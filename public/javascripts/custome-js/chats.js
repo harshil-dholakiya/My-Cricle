@@ -15,6 +15,9 @@ toastr.options = {
     "showMethod": "fadeIn",
     "hideMethod": "fadeOut"
 }
+
+
+
 socket.on('newMessage', function (data) {
     let id = $('#chatMessage').data('id')
     if (data.senderId == id) {
@@ -40,46 +43,39 @@ $(document).off('click', '#chat').on('click', '#chat', function () {
         url: `/users/chat-model`,
         success: function (allUsers) {
             let htmlData = ``;
-            for (let i = 0; i < allUsers.length; i++) {
+            for (let i = 0; i < allUsers.allUsers.length; i++) {
                 htmlData += `
-                <div class="card mb-2 clickToChat" style="height:60px;width:285px;" id="${allUsers[i]._id}" data-login-user-id=${allUsers[0].loginUserId}>
+                <div class="card mb-2 clickToChat" style="height:60px;width:285px;" id="${allUsers.allUsers[i]._id}" data-login-user-id=${allUsers.allUsers[0].loginUserId}>
                   <div class="row row-0">
                     <div class="col-2">
-                      <img class="profilePhoto" src="/images/users/${allUsers[i].profilePath}" style="height:50px;border-radius:25px;width:50px;margin:4px 0px 3px 3px">
+                      <img class="profilePhoto" src="/images/users/${allUsers.allUsers[i].profilePath}" style="height:50px;border-radius:25px;width:50px;margin:4px 0px 3px 3px">
                     </div>
                     <div class="col">
                       <div class="card-body d-flex" style="padding-left:12px">
-                        <div class="col-8 card-title name active-${allUsers[i]._id}">${allUsers[i].firstName} ${allUsers[i].lastName}</div>
-                        ${allUsers[i].chatCount == 0 ? `<div class="unSeenMessageCount" style="padding:5px;margin-left:40px;width:25px;height:25px;border-radius:30px"></div>` : `
-                        <div class="badge bg-primary unSeenMessageCount" style="padding:5px;margin-left:40px;width:25px;height:25px;border-radius:30px">${allUsers[i].chatCount}`}</div>
+                        <div class="col-8 card-title name active-${allUsers.allUsers[i]._id}">${allUsers.allUsers[i].firstName} ${allUsers.allUsers[i].lastName}</div>
+                        ${allUsers.allUsers[i].chatCount == 0 ? `<div class="unSeenMessageCount" style="padding:5px;margin-left:40px;width:25px;height:25px;border-radius:30px"></div>` : `
+                        <div class="badge bg-primary unSeenMessageCount" style="padding:5px;margin-left:40px;width:25px;height:25px;border-radius:30px">${allUsers.allUsers[i].chatCount}`}</div>
                       </div>
                     </div>
                   </div>
                 </div>`
             }
-
             let groupData = ``;
-            for (let i = 0; i < allUsers.length; i++) {
-                for (let j = i; j < allUsers[i].group.length; j++) {
-                    groupData += `<div class="card mb-2 GroupChat" style="height:60px;width:285px;" id=${allUsers[i].group[j]._id}>
+            for (let i = 0; i < allUsers.groupDetails.length; i++) {
+                groupData += `<div class="card mb-2 GroupChat" style="height:60px;width:285px;" id=${allUsers.groupDetails[i]._id} data-login-user-id=${allUsers.allUsers[0].loginUserId}>
                     <div class="row row-0">
                     <div class="col-2">
                     <img class="groupProfilePhoto" src="logo.png" style="height:50px;border-radius:25px;width:50px;margin:4px 0px 3px 3px">
                     </div>
                     <div class="col">
                     <div class="card-body d-flex" style="padding-left:12px">
-                    <div class="col-8 card-title groupName">${allUsers[i].group[j].groupName}</div>
+                    <div class="col-8 card-title groupName">${allUsers.groupDetails[i].groupName}</div>
                     </div>
                     </div>
                     </div>
                     </div>`
-                }
             }
-            
-            // console.log(allUsers[i].group[j].memberId)
-            // for (let k = 0; k < allUsers[i].group[j].memberId.length; k++) {
-            //     var userIdsOfGroupMembers = allUsers[i].group[j].memberId[k]
-            // }
+
             $('.allUsers').html(htmlData);
             $('.allUsers').append(groupData);
             $('#modal-chat').modal('toggle');
@@ -95,17 +91,39 @@ $(document).off('click', '#chat').on('click', '#chat', function () {
 //Group Chat
 $(document).off('click', '.GroupChat').on('click', '.GroupChat', function () {
     $groupName = $(this).find('.groupName').html()
+    $loginUserId = $(this).data('login-user-id')
     let groupId = $(this).attr('id')
-    console.log(groupId);
+    $groupId = groupId
     $GroupProfilePhoto = $(this).find('.groupProfilePhoto').attr('src')
     $.ajax({
         type: "get",
         url: `/users/Groupchat/${groupId}`,
-        success: function (data) {
+        success: function (groupChatDetails) {
             $('.userProfilePhoto').html(`
             <img src='${$GroupProfilePhoto}' alt="GroupProfilePhoto" style="border-radius:250px; width:50px; height:50px">
             <span class="card-title mt-2 ms-2">${$groupName}</span>
             `)
+
+            let groupMessageData = ``;
+            for (let i = 0; i < groupChatDetails.length; i++) {
+                if (groupChatDetails[i].senderId == $loginUserId) {
+                    groupMessageData += `
+                    
+                    <div class="bg-primary mt-2 p-3 mb-2" style="border-radius:15px;max-width:500px;clear:both;float:right">
+                    <h4>You</h4>
+                    ${groupChatDetails[i].chatMessage}
+                        <div style="float:right;margin:10px 0px 0px 10px">${moment(groupChatDetails[i].createdOn).format('h:mm')}</div>
+                    </div>`
+                }
+                if (groupChatDetails[i].senderId != $loginUserId) {
+                    groupMessageData += `
+                    <div class="bg-green mt-2 p-3 mb-2" style="border-radius:15px;max-width:500px;clear:both;float:left">
+                    <h4>${groupChatDetails[i].userDetails.firstName} ${groupChatDetails[i].userDetails.lastName}</h4>
+                    ${groupChatDetails[i].chatMessage}
+                        <div style="float:right;margin:10px 0px 0px 10px">${moment(groupChatDetails[i].createdOn).format('h:mm')}</div>
+                    </div>`
+                }
+            }
 
             $('.messageDiv').html(`
             <div id="chatMessage" class="overflow-auto mt-2" style="max-height: 445px;">
@@ -113,7 +131,7 @@ $(document).off('click', '.GroupChat').on('click', '.GroupChat', function () {
             <div class="mb-3 row">
             <div class="col-sm-11">
                  <input type="text" class="position-absolute bottom-0 mb-2 form-control text-red" id="inputMessage" placeholder="Type message..." style="width:1380px; border:none;border-radius:10px; box-shadow:10px 5px 5px grey">
-                    <a href="javascript:void(0)" id="groupMessageSendBtn" data-receiver-id= data-login-user="" class="btn btn-primary me-3 rounded-pill position-absolute bottom-0 end-0 mb-2 px-4" >
+                    <a href="javascript:void(0)" id="groupMessageSendBtn" data-group-id=${$groupId} data-login-user-id=${$loginUserId} class="btn btn-primary me-3 rounded-pill position-absolute bottom-0 end-0 mb-2 px-4" >
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-send ms-1" width="24"
                         height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                         stroke-linecap="round" stroke-linejoin="round">
@@ -125,11 +143,43 @@ $(document).off('click', '.GroupChat').on('click', '.GroupChat', function () {
                     </a>
             </div>
             </div>`)
+
+            $('#chatMessage').append(groupMessageData)
         },
         error: function (data) {
             alert("Error from .GroupChat")
         }
     })
+})
+
+
+$(document).off('click', '#groupMessageSendBtn').on('click', '#groupMessageSendBtn', function () {
+    let groupId = $(this).data("group-id")
+    let userId = $(this).data('login-user-id')
+    groupChatMessageValue = $('#inputMessage').val()
+    console.log("groupChatMessageValue", groupChatMessageValue);
+    groupChatMessageValue.trim()
+    $this = $(this)
+    if (groupChatMessageValue.length) {
+        $.ajax({
+            type: "post",
+            url: `/users/userChat/${userId}/${groupId}`,
+            data: {
+                "groupChatMessage": groupChatMessageValue
+            },
+            success: function (message) {
+                $('#chatMessage').append(`
+                        <div class="bg-primary mt-2 p-3 mb-2" style ="border-radius:15px;max-width:500px;clear:both;float:right">
+                        <h4>You</h4>
+                        ${message.chatMessage}
+                            <div style="float:right;margin:10px 0px 0px 10px">${moment(message.createdOn).format('h:mm')}</div></div>`)
+                $('#inputMessage').val('')
+            },
+            error: function (data) {
+                alert("Error from #GroupMessageSendBtn")
+            }
+        })
+    }
 })
 
 $(document).off('click', '.clickToChat').on('click', '.clickToChat', function () {
@@ -269,8 +319,6 @@ $(document).off('click', '#createGroupBtn').on('click', '#createGroupBtn', funct
                 "groupName": groupName
             },
             success: function (data) {
-                // console.log(data);
-                // $('.allUsers').append(data)
                 toastr.success(`Group created!`);
             },
             error: function (data) {

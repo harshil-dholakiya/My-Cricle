@@ -18,10 +18,14 @@ $(document).ready(function () {
     }
 
     const loginUserId = $("#loginUserId").data('login-user-id')
-    const socket = io({ query: `userId=${loginUserId}` });
+    const groupId = $("#loginUserId").data('groupid')
+
+    const socket = io({
+        query: { userid: loginUserId, groupid: groupId },
+    });
 
     socket.on('connectToRoom', function (data) {
-        console.log(`${loginUserId}`,data);
+        console.log(`${loginUserId}`, data);
     });
 
     socket.on('newNotification', function (data) {
@@ -34,7 +38,6 @@ $(document).ready(function () {
             $(`#${key}`).parents('.card-body').find(".savedPostCountClass").html(value)
         }
     });
-    
 
     socket.on('notificationCount', function (data) {
         data = JSON.parse(data);
