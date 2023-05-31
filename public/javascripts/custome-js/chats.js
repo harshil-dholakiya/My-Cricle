@@ -17,8 +17,9 @@ toastr.options = {
 }
 
 
-
 socket.on('newMessage', function (data) {
+    console.log("====");
+    console.log("data",data);
     let id = $('#chatMessage').data('id')
     if (data.senderId == id) {
         $('#chatMessage').append(`
@@ -35,6 +36,12 @@ socket.on('newMessage', function (data) {
         }
     }
 });
+
+// socket.on('groupMessage', function (data) {
+//     console.log("GroupMessage");
+//     data = JSON.parse(data);
+//     console.log("data", data);
+// })
 
 $(document).off('click', '#chat').on('click', '#chat', function () {
     $this = $(this)
@@ -157,7 +164,6 @@ $(document).off('click', '#groupMessageSendBtn').on('click', '#groupMessageSendB
     let groupId = $(this).data("group-id")
     let userId = $(this).data('login-user-id')
     groupChatMessageValue = $('#inputMessage').val()
-    console.log("groupChatMessageValue", groupChatMessageValue);
     groupChatMessageValue.trim()
     $this = $(this)
     if (groupChatMessageValue.length) {

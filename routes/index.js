@@ -71,6 +71,10 @@ router.get('/', async function (req, res) {
     if (req.isAuthenticated()) {
       const loginUserData = await userModel.findOne({ "_id": req.user._id }, { 'email': 1, "firstName": 1, "lastName": 1, "profilePath": 1 }).lean()
       res.locals.userDetails = loginUserData
+
+      let groupDetails = await groupChatModel.find({ memberId: { $in: [new mongoose.Types.ObjectId(req.user._id)] } })
+      var groupId = groupDetails.map((groupid) => groupid._id)
+      res.locals.groupid = groupId
     }
 
     // =================Count Documents Query For Pagination================
@@ -177,7 +181,7 @@ router.get('/', async function (req, res) {
             "postdata.title": {
               $regex: req.query.search,
               $options: 'i'
-            }
+            } 
           }, {
             "postdata.description": {
               $regex: req.query.search,
@@ -272,36 +276,6 @@ router.get('/', async function (req, res) {
       sortStage["$sort"][req.query.sortField] = Number(req.query.sortOrder);
       postPipeline.push(sortStage);
     }
-
-    // if (req.query.savedPost == "savedPost") {
-    //   let savedPostIds = await savedPostModel.distinct("postId", { userId: req.user._id });
-    //   let savedPostUserIds = await postModel.distinct("userId", { _id: { $in: savedPostIds } });
-
-    //   aggregateQuery.push({
-    //     $match: {
-    //       _id: {
-    //         $in: savedPostUserIds
-    //       }
-    //     }
-    //   });
-
-    //   aggregateQuery.push({
-    //     $lookup: {
-    //       from: "posts",
-    //       let: {
-    //         userId: "$_id"
-    //       },
-    //       pipeline: [{
-    //         $match: {
-    //           $and: [{ $expr: { $eq: ['$$userId', '$userId'] } }, { 'isArchive': false }, { _id: { $in: savedPostIds } }]
-    //         },
-    //       }],
-    //       as: 'postdata'
-    //     }
-    //   }, {
-    //     $unwind: "$postdata"
-    //   });
-    // }
 
     if (req.query.savedPost == "savedPost") {
       let savedPostIds = await savedPostModel.distinct("postId", { userId: req.user._id });
@@ -480,23 +454,20 @@ router.get('/', async function (req, res) {
     // Final Query
     let postData = await userModel.aggregate(aggregateQuery);
 
-    let groupDetails = await groupChatModel.find({ memberId: { $in: [new mongoose.Types.ObjectId(req.user._id)] } })
-    let groupId = groupDetails.map((groupid) => groupid._id)
-    console.log(groupId);
+    // let groupDetails = await groupChatModel.find({ memberId: { $in: [new mongoose.Types.ObjectId(req.user._id)] } })
+    // var groupId = groupDetails.map((groupid) => groupid._id)
     if (req.xhr) {
       return res.render('partials/posts', {
         title: 'My Cricle',
         postData: postData,
         savedPost: savedPost,
-        groupIds: groupId,
+        // groupIds: groupId,
         pages: pages
       })
     }
     else {
-
       try {
         var notificationData = await notificationModel.find({ postOwnerId: req.user._id, isSeen: false }).sort({ createdOn: -1 }).lean()
-        // var AllNotification = await notificationModel.find({ postOwnerId: req.user._id }).sort({ createdOn: -1 }).lean()
         var notificationCount = notificationData.length
         io.to(req.user._id.toString()).emit("notificationCount", JSON.stringify(notificationData))
 
@@ -510,10 +481,11 @@ router.get('/', async function (req, res) {
         notificationData: notificationData,
         notificationCount: notificationCount,
         savedPost: savedPost,
-        groupIds: groupId,
+        // groupIds: groupId,
         pages: pages
       })
     }
+
   } catch (error) {
     console.log(error);
     res.send({ type: "error", message: "from Get" })

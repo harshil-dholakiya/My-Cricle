@@ -5,10 +5,11 @@ module.exports = function (server) {
         let groupId = socket.handshake.query.groupid
         socket.join(userId);
         socket.join(groupId);
-        
-        io.to(userId).emit("connectToRoom", "You are connected")
 
-        console.log('socket.rooms',socket.rooms);
+        io.to(userId).emit("connectToRoom", "You are connected")
+        console.log('socket', socket.id);
+        console.log('socket.rooms', socket.rooms);
+        console.log("socket.handshake.query.userid",socket.handshake.query.userid);
     });
-    
+
 }

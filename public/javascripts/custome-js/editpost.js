@@ -19,7 +19,7 @@ $(document).ready(function () {
 
     $('#editPostForm').validate({
         rules: {
-            editTitle: {
+            editTitle: {    
                 required: true,
                 maxlength: 30
             },

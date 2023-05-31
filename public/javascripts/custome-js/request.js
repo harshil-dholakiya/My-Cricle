@@ -1,5 +1,6 @@
 const loginUserId = $("#loginUserId").data('login-user-id')
-const socket = io({ query: `userId=${loginUserId}` });
+const groupId = $("#loginUserId").data('groupid')
+const socket = io({ query: { userid: loginUserId, groupid: groupId } });
 
 function sendRequestNotification(data) {
     if (data.reqStatus == "accepted") {

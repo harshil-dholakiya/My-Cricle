@@ -626,17 +626,13 @@ router.get('/chat/:userId', async function (req, res) {
 
 // create Message and store into database
 router.post('/userChat/:userId?/:groupId?', async function (req, res) {
-  // req.params.userId = Message receiverId
-  // req.user._id = Message senderId
-  // chatMessage = req.body.chatMessage
   if (req.params.groupId) {
     let groupCreateMessage = await chatModel.create({ chatMessage: req.body.groupChatMessage, senderId: req.user._id, chatWith: "group", groupId: req.params.groupId })
-    // io.to(req.params.groupId.toString()).emit("newMessage", groupCreateMessage)
-
+    io.to(req.params.groupId.toString()).emit("newMessage", groupCreateMessage)
     return res.send(groupCreateMessage)
   }
-  else {
-    let createMessage = await chatModel.create({ chatMessage: req.body.chatMessage, receiverId: req.params.userId, senderId: req.user._id })
+  if (req.params.userId) {
+    let createMessage = await chatModel.create({ chatMessage: req.body.chatMessage, senderId: req.user._id, receiverId: req.params.userId})
     io.to(req.params.userId.toString()).emit("newMessage", createMessage)
     return res.send(createMessage)
   }
